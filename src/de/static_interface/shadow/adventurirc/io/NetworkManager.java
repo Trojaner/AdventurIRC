@@ -15,7 +15,7 @@ import de.static_interface.shadow.adventurirc.gui.ChatFrame;
 
 public class NetworkManager
 {
-	public static final String channelName = "#advTest";
+	public static final String channelName = "#adventuriabot";
 	
 	static Connection connection;
 	
