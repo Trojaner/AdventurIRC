@@ -50,7 +50,11 @@ class Connection implements Runnable
 		{
 			bot.startBot();
 		}
-		catch (IOException | IrcException e)
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		catch ( IrcException e )
 		{
 			e.printStackTrace();
 		}

@@ -79,41 +79,22 @@ public abstract class BasicChatPanel extends JPanel
 	
 	Color parseToColor(String toParse)
 	{
-		switch ( toParse )
-		{
-			case BLUE:
-				return Color.BLUE;
-			case BROWN:
-				return Color.GREEN.darker().darker();
-			case CYAN:
-				return Color.CYAN;
-			case DARK_BLUE:
-				return Color.BLUE.darker().darker();
-			case DARK_GRAY:
-				return Color.DARK_GRAY;
-			case DARK_GREEN:
-				return Color.GREEN.darker();
-			case GREEN:
-				return Color.GREEN;
-			case LIGHT_GRAY:
-				return Color.LIGHT_GRAY;
-			case MAGENTA:
-				return Color.MAGENTA;
-			case OLIVE:
-				return Color.GREEN.darker().darker().darker();
-			case PURPLE:
-				return Color.MAGENTA.darker();
-			case RED:
-				return Color.RED;
-			case TEAL:
-				return Color.CYAN.darker();
-			case WHITE:
-				return Color.WHITE;
-			case YELLOW:
-				return Color.YELLOW;
-			default:
-				return Color.BLACK;
-		}
+		if (toParse.equals( BLUE )) return Color.BLUE;
+		if (toParse.equals( BROWN )) return Color.GREEN.darker().darker();
+		if (toParse.equals( CYAN )) return Color.CYAN;
+		if (toParse.equals( DARK_BLUE )) return Color.BLUE.darker().darker();
+		if (toParse.equals( DARK_GRAY )) return Color.DARK_GRAY;
+		if (toParse.equals( DARK_GREEN )) return Color.GREEN.darker();
+		if (toParse.equals( GREEN )) return Color.GREEN;
+		if (toParse.equals( LIGHT_GRAY )) return Color.LIGHT_GRAY;
+		if (toParse.equals( MAGENTA )) return Color.MAGENTA;
+		if (toParse.equals( OLIVE )) return Color.GREEN.darker().darker().darker();
+		if (toParse.equals( PURPLE )) return Color.MAGENTA.darker();
+		if (toParse.equals( RED )) return Color.RED;
+		if (toParse.equals( TEAL )) return Color.CYAN.darker();
+		if (toParse.equals( WHITE )) return Color.WHITE;
+		if (toParse.equals( YELLOW )) return Color.YELLOW;
+		else return Color.BLACK;
 	}
 	
 	/**

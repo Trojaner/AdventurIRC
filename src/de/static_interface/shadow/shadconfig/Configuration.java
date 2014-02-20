@@ -3,6 +3,7 @@ package de.static_interface.shadow.shadconfig;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -14,7 +15,7 @@ import java.util.Map.Entry;
 public class Configuration
 {
 	Path path;
-	HashMap<String, String> savedData = new HashMap<>();
+	HashMap<String, String> savedData = new HashMap<String, String>();
 	
 	public Configuration(File path)
 	{
@@ -38,8 +39,9 @@ public class Configuration
 	{
 		if ( Files.exists(path) )
 		{
-			try ( BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8) )
+			try
 			{
+				BufferedReader reader = new BufferedReader(new FileReader(path.toFile()));
 				String readLine = reader.readLine();
 				while ( readLine != null )
 				{
@@ -99,7 +101,11 @@ public class Configuration
 			writer.flush();
 			writer.close();
 		}
-		catch ( IOException | InterruptedException e )
+		catch ( IOException e )
+		{
+			e.printStackTrace();
+		}
+		catch ( InterruptedException e )
 		{
 			e.printStackTrace();
 		}

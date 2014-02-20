@@ -24,7 +24,7 @@ public class ChatFrame extends JFrame
 	private static final long serialVersionUID = 1L;
 	private JTabbedPane contentPane = new JTabbedPane();
 	private PublicChatPanel channelPanel = new PublicChatPanel(NetworkManager.getChannelInstance());
-	private HashMap<UUID, PrivateChatPanel> chatPanels = new HashMap<>();
+	private HashMap<UUID, PrivateChatPanel> chatPanels = new HashMap<UUID, PrivateChatPanel>();
 	
 	public static final ChatFrame mainChatFrame = new ChatFrame();
 	
