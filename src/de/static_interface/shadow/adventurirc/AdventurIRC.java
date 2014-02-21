@@ -14,7 +14,7 @@ public class AdventurIRC
 	public static final SimpleDateFormat dateFormat = new SimpleDateFormat("DD_MM_YYYY");
 	public static final SimpleDateFormat timeFormat = new SimpleDateFormat("[HH:mm:ss] ");
 	
-	public static final String VERSION = "AdventurIRC_v0.99731";
+	public static final String VERSION = "AdventurIRC_v1";
 	
 	public static void main(String[] args)
 	{
