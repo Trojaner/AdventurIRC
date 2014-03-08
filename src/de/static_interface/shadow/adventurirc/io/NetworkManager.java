@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.pircbotx.Channel;
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
+import org.pircbotx.User;
 import org.pircbotx.exception.IrcException;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
@@ -15,7 +16,7 @@ import de.static_interface.shadow.adventurirc.gui.ChatFrame;
 
 public class NetworkManager
 {
-	public static final String channelName = "#adventuriabot";
+	public static final String channelName = "#advTest";
 	
 	static Connection connection;
 	
@@ -28,6 +29,11 @@ public class NetworkManager
 		connection = new Connection(bot);
 		new Thread(connection).start();
 		channelInstance = connection.bot.getUserChannelDao().getChannel(channelName);
+	}
+	
+	public static User getUser(String name)
+	{
+		return connection.bot.getUserChannelDao().getUser(name);
 	}
 	
 	public static Channel getChannelInstance()

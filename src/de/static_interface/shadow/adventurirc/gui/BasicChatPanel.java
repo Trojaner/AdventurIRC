@@ -10,11 +10,15 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 
-import de.static_interface.shadow.adventurirc.AdventurIRC;
-
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
+
+import org.pircbotx.User;
+
+import de.static_interface.shadow.adventurirc.AdventurIRC;
+import de.static_interface.shadow.adventurirc.io.NetworkManager;
+
 
 import static org.pircbotx.Colors.*;
 
@@ -40,6 +44,12 @@ public abstract class BasicChatPanel extends JPanel
 			public void actionPerformed(ActionEvent arg0)
 			{
 				if ( textInput.getText().trim().equals("") ) return;
+				if ( textInput.getText().startsWith("/") ) 
+				{
+					checkCommand(textInput.getText());
+					textInput.setText("");
+					return;
+				}
 				sendMessageToReceipt(textInput.getText());
 				textInput.setText("");
 			}
@@ -91,6 +101,24 @@ public abstract class BasicChatPanel extends JPanel
 		if ( s == null ) s = textOutput.addStyle(name, null);
 		StyleConstants.setForeground(s, parseToColor(name));
 		return s;
+	}
+	
+	public void checkCommand(String toCheck)
+	{
+		if ( 
+				toCheck.startsWith("/msg") ||
+				toCheck.startsWith("/pn") || 
+				toCheck.startsWith("/query")
+			)
+		{
+			if ( toCheck.split(" ").length < 3 ) return;
+
+			System.out.println(toCheck.split(" ")[1]);
+			User receipt = NetworkManager.getUser(toCheck.split(" ")[1]);
+			String toSend = toCheck.substring(toCheck.indexOf(' ', toCheck.indexOf(' ')+1)+1);
+			ChatFrame.mainChatFrame.addChat(receipt).sendMessageToReceipt(toSend);
+			return;
+		}
 	}
 	
 	public abstract void matchSize(int sizeX, int sizeY);

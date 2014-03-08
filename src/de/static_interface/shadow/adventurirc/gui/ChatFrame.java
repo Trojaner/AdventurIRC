@@ -83,13 +83,16 @@ public class ChatFrame extends JFrame
 		chatPanel.insertString(String.format("%s <%s>: %s", AdventurIRC.timeFormat.format(new Date()), e.getUser().getNick(), e.getMessage()));
 	}
 	
-	public void addChat(User u)
+	public PrivateChatPanel addChat(User u)
 	{
-		if ( !(chatPanels.get(u.getUserId()) == null) ) return;
+		if ( chatPanels.containsKey(u.getUserId()) ) return chatPanels.get(u.getUserId());
+		
 		PrivateChatPanel chatPanel = new PrivateChatPanel(u);
 		chatPanels.put(u.getUserId(), chatPanel);
 		contentPane.addTab(u.getNick(), chatPanel);
 		chatPanel.matchSize((int) this.getSize().getWidth(),(int) this.getSize().getHeight());
+		contentPane.repaint();
+		return chatPanel;
 	}
 	
 	public void insertUserList()
