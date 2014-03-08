@@ -46,37 +46,19 @@ public abstract class BasicChatPanel extends JPanel
 		});
 		add(textInput);
 	}
+	
 	public void insertString(String toInsert)
 	{
-		insertStringWithColor(splitByColorCode(toInsert));
-	}
-	
-	private void insertStringWithColor(String[] toInsert)
-	{
-		Style toWrite;
-		int offset = 0;
-		
-		for ( String s : toInsert )
+		try
 		{
-			offset = textOutput.getStyledDocument().getLength();
-			toWrite = getStyle(((char) 3)+""+s.charAt(1));
-			try
-			{
-				textOutput.getStyledDocument().insertString(offset, String.format("%s\n", s), toWrite);
-			}
-			catch (BadLocationException e)
-			{
-				e.printStackTrace();
-			}
+			textOutput.getStyledDocument().insertString(textOutput.getStyledDocument().getLength(), removeColors(toInsert+"\n"), getStyle(BLACK));
 		}
-		textOutput.setCaretPosition(offset);
+		catch ( BadLocationException e )
+		{
+			e.printStackTrace();
+		}
 	}
-	
-	String[] splitByColorCode(String toSplit)
-	{
-		return toSplit.split(""+((char) 3));
-	}
-	
+
 	Color parseToColor(String toParse)
 	{
 		if (toParse.equals( BLUE )) return Color.BLUE;
