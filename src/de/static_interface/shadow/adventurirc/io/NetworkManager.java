@@ -1,5 +1,6 @@
 package de.static_interface.shadow.adventurirc.io;
 
+import java.awt.Toolkit;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
@@ -73,6 +74,7 @@ class ChatListener extends ListenerAdapter<PircBotX>
 	public void onMessage(MessageEvent<PircBotX> event) throws Exception
 	{
 		ChatFrame.mainChatFrame.write(event);
+		if ( event.getMessage().contains(AdventurIRC.nickname) ) Toolkit.getDefaultToolkit().beep();
 		ChatFrame.mainChatFrame.insertUserList();
 	}
 	

@@ -62,7 +62,6 @@ public abstract class BasicChatPanel extends JPanel
 		{
 			textOutput.getStyledDocument().insertString(textOutput.getStyledDocument().getLength(), removeColors(toInsert+"\n"), getStyle(BLACK));
 			textOutput.setCaretPosition(textOutput.getStyledDocument().getLength());
-			if ( toInsert.contains(nickname) ) Toolkit.getDefaultToolkit().beep();
 		}
 		catch ( BadLocationException e )
 		{
