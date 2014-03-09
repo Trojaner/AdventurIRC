@@ -96,7 +96,6 @@ public abstract class BasicChatPanel extends JPanel
 	 */
 	public Style getStyle(String name)
 	{
-		System.out.println(name+" == "+parseToColor(name));
 		Style s = textOutput.getStyle(name);
 		if ( s == null ) s = textOutput.addStyle(name, null);
 		StyleConstants.setForeground(s, parseToColor(name));
@@ -112,8 +111,7 @@ public abstract class BasicChatPanel extends JPanel
 			)
 		{
 			if ( toCheck.split(" ").length < 3 ) return;
-
-			System.out.println(toCheck.split(" ")[1]);
+			
 			User receipt = NetworkManager.getUser(toCheck.split(" ")[1]);
 			String toSend = toCheck.substring(toCheck.indexOf(' ', toCheck.indexOf(' ')+1)+1);
 			ChatFrame.mainChatFrame.addChat(receipt).sendMessageToReceipt(toSend);
