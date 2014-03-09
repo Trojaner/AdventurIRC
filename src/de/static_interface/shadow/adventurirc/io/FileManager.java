@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import de.static_interface.shadow.shadconfig.Configuration;
+import de.static_interface.shadow.tameru.Configuration;
 
 public class FileManager
 {
