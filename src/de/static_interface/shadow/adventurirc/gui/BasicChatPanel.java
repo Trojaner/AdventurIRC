@@ -13,13 +13,12 @@ import javax.swing.text.StyleConstants;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
+import java.awt.Toolkit;
 
 import org.pircbotx.User;
 
 import de.static_interface.shadow.adventurirc.AdventurIRC;
 import de.static_interface.shadow.adventurirc.io.NetworkManager;
-
-
 import static org.pircbotx.Colors.*;
 
 public abstract class BasicChatPanel extends JPanel
@@ -62,6 +61,8 @@ public abstract class BasicChatPanel extends JPanel
 		try
 		{
 			textOutput.getStyledDocument().insertString(textOutput.getStyledDocument().getLength(), removeColors(toInsert+"\n"), getStyle(BLACK));
+			textOutput.setCaretPosition(textOutput.getStyledDocument().getLength());
+			if ( toInsert.contains(nickname) ) Toolkit.getDefaultToolkit().beep();
 		}
 		catch ( BadLocationException e )
 		{

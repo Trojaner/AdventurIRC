@@ -1,6 +1,7 @@
 package de.static_interface.shadow.adventurirc.io;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import org.pircbotx.Channel;
 import org.pircbotx.Configuration;
@@ -24,7 +25,7 @@ public class NetworkManager
 	
 	public static void connect(String nickname)
 	{
-		Configuration<PircBotX> cfg = new Configuration.Builder<PircBotX>().setName(nickname).setLogin(nickname).setVersion(AdventurIRC.VERSION).setFinger(nickname).addAutoJoinChannel(channelName).addListener(new ChatListener()).setServer("irc.adventuria.eu", 6667).buildConfiguration();
+		Configuration<PircBotX> cfg = new Configuration.Builder<PircBotX>().setName(nickname).setLogin(nickname).setVersion(AdventurIRC.VERSION).setFinger(nickname).setEncoding(StandardCharsets.UTF_8).addAutoJoinChannel(channelName).addListener(new ChatListener()).setServer("irc.adventuria.eu", 6667).buildConfiguration();
 		PircBotX bot = new PircBotX(cfg);
 		connection = new Connection(bot);
 		new Thread(connection).start();
