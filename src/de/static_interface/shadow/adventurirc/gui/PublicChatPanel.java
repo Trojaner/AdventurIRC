@@ -1,64 +1,33 @@
 package de.static_interface.shadow.adventurirc.gui;
 
-import java.util.Date;
-
-import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.plaf.nimbus.NimbusLookAndFeel;
-
 import org.pircbotx.Channel;
-import org.pircbotx.User;
 
-public class PublicChatPanel extends BasicChatPanel
+public class PublicChatPanel extends ChatPanel
 {
 	private static final long serialVersionUID = 1L;
-
-	Channel receipt;
 	
-	JTextPane userList = new JTextPane();
+	private Channel channel;
 	
-	JScrollPane userListScrollPane = new JScrollPane();
+	private TextOutput userList = new TextOutput();
 	
-	public PublicChatPanel(Channel receipt)
+	public PublicChatPanel(Channel channel)
 	{
-		try
-		{
-			UIManager.setLookAndFeel(new NimbusLookAndFeel());
-		}
-		catch (UnsupportedLookAndFeelException e)
-		{
-			e.printStackTrace();
-		}
-		this.receipt = receipt;
-		userListScrollPane.setViewportView(userList);
-		add(userListScrollPane);
-		userList.setEditable(false);
-		textOutput.setEditable(false);
+		super();
+		this.channel = channel;
+		add(userList);
 	}
 	
 	@Override
-	public void matchSize(int sizeX, int sizeY)
+	public void resize()
 	{
-		textOutputScrollPane.setBounds(5, 5, sizeX-155, sizeY-95);
-		textInput.setBounds(5, sizeY-90, sizeX-20, 25);
-		userListScrollPane.setBounds(sizeX-150, 5, 135, sizeY-95);
-	}
-	
-	public void rewriteUserList()
-	{
-		userList.setText("");
-		for ( User u : receipt.getUsers() )
-		{
-			userList.setText(userList.getText()+u.getNick()+"\n");
-		}
+		textOutput.setBounds(0, 0, (int) this.getSize().getWidth()-135, (int) this.getSize().getHeight()-35);
+		textInput.setBounds(0, (int) this.getSize().getHeight()-30, (int) this.getSize().getWidth()-135, 25);
+		userList.setBounds((int) this.getSize().getWidth()-130, 0, 125, (int) this.getSize().getHeight()-35);
 	}
 	
 	@Override
-	public void sendMessageToReceipt(String toWrite)
+	public void send(String toSend)
 	{
-		receipt.send().message(toWrite);
-		insertString(String.format("%s <%s>: %s", timeFormat.format(new Date()), nickname, toWrite));
+		channel.send().message(toSend);
 	}
 }

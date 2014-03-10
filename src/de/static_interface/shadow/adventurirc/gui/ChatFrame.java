@@ -1,102 +1,67 @@
 package de.static_interface.shadow.adventurirc.gui;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
 
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 
-import org.pircbotx.PircBotX;
+import org.pircbotx.Channel;
 import org.pircbotx.User;
-import org.pircbotx.hooks.Event;
-import org.pircbotx.hooks.events.MessageEvent;
-import org.pircbotx.hooks.events.PrivateMessageEvent;
 
-import de.static_interface.shadow.adventurirc.AdventurIRC;
-import de.static_interface.shadow.adventurirc.io.NetworkManager;
-
+import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
 public class ChatFrame extends JFrame
 {
 	private static final long serialVersionUID = 1L;
-	private JTabbedPane contentPane = new JTabbedPane();
-	private PublicChatPanel channelPanel = new PublicChatPanel(NetworkManager.getChannelInstance());
-	private HashMap<UUID, PrivateChatPanel> chatPanels = new HashMap<UUID, PrivateChatPanel>();
 	
-	public static final ChatFrame mainChatFrame = new ChatFrame();
+	HashMap<UUID, PrivateChatPanel> private_chats = new HashMap<UUID, PrivateChatPanel>();
+	HashMap<Channel, PublicChatPanel> public_chats = new HashMap<Channel, PublicChatPanel>();
+	
+	JTabbedPane content = new JTabbedPane();
 	
 	public ChatFrame()
 	{
 		addComponentListener(new ComponentAdapter()
 		{
 			@Override
-			public void componentResized(ComponentEvent arg0)
+			public void componentResized(ComponentEvent e)
 			{
-				int sizeX = (int) arg0.getComponent().getSize().getWidth();
-				int sizeY = (int) arg0.getComponent().getSize().getHeight();
-				
-				for ( PrivateChatPanel p : chatPanels.values() )
-				{
-					p.matchSize(sizeX, sizeY);
-				}
-				
-				channelPanel.matchSize(sizeX, sizeY);
+				for ( ChatPanel p : private_chats.values() ) p.resize();
+				for ( ChatPanel p : public_chats.values() ) p.resize();
 			}
 		});
-		
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
-		setContentPane(contentPane);
-		contentPane.addTab(NetworkManager.channelName, channelPanel);
+		setSize((int) Toolkit.getDefaultToolkit().getScreenSize().getWidth()/2, (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight()/2);
+		getContentPane().add(content);
+		content.setBounds(5, 5, (int) getSize().getWidth()-5, (int) getSize().getHeight()-5);
 	}
 	
-	private void writeToChannel(MessageEvent<PircBotX> e)
+	private void addPrivateChatPanel(User u)
 	{
-		channelPanel.insertString(String.format("%s <%s>: %s", AdventurIRC.timeFormat.format(new Date()), e.getUser().getNick(), e.getMessage()));
+		private_chats.put(u.getUserId(), new PrivateChatPanel(u));
+		content.add(private_chats.get(u.getUserId()));
+		content.repaint();
 	}
 	
-	public void write(Event<PircBotX> event)
+	private void addPublicChatPanel(Channel c)
 	{
-		if ( event instanceof MessageEvent<?> )
-		{
-			writeToChannel((MessageEvent<PircBotX>) event);
-			return;
-		}
-		else
-		{
-			writeToUser((PrivateMessageEvent<PircBotX>) event);
-		}
+		public_chats.put(c, new PublicChatPanel(c));
+		content.add(public_chats.get(c));
+		content.repaint();
 	}
 	
-	private void writeToUser(PrivateMessageEvent<PircBotX> e)
+	public PublicChatPanel getChannel(Channel c)
 	{
-		PrivateChatPanel chatPanel = chatPanels.get(e.getUser().getUserId());
-		if ( chatPanel == null )
-		{
-			addChat(e.getUser());
-			writeToUser(e);
-			return;
-		}
-		chatPanel.insertString(String.format("%s <%s>: %s", AdventurIRC.timeFormat.format(new Date()), e.getUser().getNick(), e.getMessage()));
+		if ( public_chats.get(c) == null ) addPublicChatPanel(c);
+		System.out.println(public_chats.get(c));
+		return public_chats.get(c);
 	}
 	
-	public PrivateChatPanel addChat(User u)
+	public PrivateChatPanel getUserPanel(User u)
 	{
-		if ( chatPanels.containsKey(u.getUserId()) ) return chatPanels.get(u.getUserId());
-		
-		PrivateChatPanel chatPanel = new PrivateChatPanel(u);
-		chatPanels.put(u.getUserId(), chatPanel);
-		contentPane.addTab(u.getNick(), chatPanel);
-		chatPanel.matchSize((int) this.getSize().getWidth(),(int) this.getSize().getHeight());
-		contentPane.repaint();
-		return chatPanel;
-	}
-	
-	public void insertUserList()
-	{
-		channelPanel.rewriteUserList();
+		if ( private_chats.get(u) == null ) addPrivateChatPanel(u);
+		return private_chats.get(u);
 	}
 }
