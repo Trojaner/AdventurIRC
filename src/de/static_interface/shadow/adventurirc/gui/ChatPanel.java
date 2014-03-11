@@ -45,6 +45,6 @@ public abstract class ChatPanel extends JPanel
 	
 	public void write(String sender, String toWrite)
 	{
-		textOutput.write(String.format("%s%s%s: %s\n", new SimpleDateFormat("[HH:MM:ss] ").format(new Date()), sender.equals(AdventurIRC.nickname) ? DARK_GREEN : BLACK, sender, toWrite));
+		textOutput.write(String.format("%s%s%s: %s%s", new SimpleDateFormat("[HH:MM:ss] ").format(new Date()), sender.equals(AdventurIRC.nickname) ? DARK_GREEN : BLACK, sender, BLACK, toWrite));
 	}
 }
