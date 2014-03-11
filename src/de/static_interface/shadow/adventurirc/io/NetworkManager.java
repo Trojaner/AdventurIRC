@@ -16,7 +16,7 @@ public class NetworkManager
 {
 	private static PircBotX bot;
 	
-	public static String channelName = "#advTest";
+	public static String channelName = "#adventuriabot";
 	
 	public static void connect(String username)
 	{

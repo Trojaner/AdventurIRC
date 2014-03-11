@@ -64,7 +64,6 @@ public class TextOutput extends JTextPane
 		}
 		catch (BadLocationException e)
 		{
-			e.printStackTrace();
 		}
 	}
 }
