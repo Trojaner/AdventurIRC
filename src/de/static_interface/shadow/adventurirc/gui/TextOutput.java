@@ -2,14 +2,16 @@ package de.static_interface.shadow.adventurirc.gui;
 
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.Style;
 
-import static org.pircbotx.Colors.removeFormattingAndColors;
 import static org.pircbotx.Colors.removeFormatting;
 import static org.pircbotx.Colors.BLACK;
 
 public class TextOutput extends JTextPane
 {
 	private static final long serialVersionUID = 1L;
+	
+	private static final String colorCodeStart = String.valueOf((char) 3);
 	
 	public TextOutput()
 	{
@@ -20,28 +22,49 @@ public class TextOutput extends JTextPane
 	
 	public void write(String text)
 	{
-		String textWithoutFormatting = removeFormatting(text);
-		String[] colorSplit = textWithoutFormatting.split(String.valueOf((char) 3));
-		for ( int x = 0; x < colorSplit.length; x++ )
+		String[] splitByColorCode = removeFormatting(text).trim().split(String.valueOf((char) 3));
+		Style style;
+		for ( String s : splitByColorCode )
 		{
-			if ( colorSplit[x].trim().replaceAll("\n", "").equals("") )
+			if ( s.startsWith("[") )
 			{
-				colorSplit[x] = BLACK;
+				try
+				{
+					getStyledDocument().insertString(getStyledDocument().getLength(), s, ColorUtils.getStyle(BLACK, getStyledDocument()));
+				}
+				catch (BadLocationException e)
+				{
+					e.printStackTrace();
+				}
 				continue;
 			}
-			colorSplit[x] = ((char) 3)+colorSplit[x];
-		}
-		
-		for ( String string : colorSplit )
-		{
+			
+			if ( Character.isDigit(s.charAt(0)) && Character.isDigit(s.charAt(1)) )
+			{
+				style = ColorUtils.getStyle(colorCodeStart+s.substring(0, 2), getStyledDocument());
+				s = s.substring(2);
+			}
+			else
+			{
+				style = ColorUtils.getStyle(BLACK, getStyledDocument());
+			}
+			
 			try
 			{
-				getStyledDocument().insertString(getStyledDocument().getLength(), removeFormattingAndColors(string), ColorUtils.getStyle(string.substring(0, 3), getStyledDocument()));
+				getStyledDocument().insertString(getStyledDocument().getLength(), s, style);
 			}
 			catch (BadLocationException e)
 			{
 				e.printStackTrace();
 			}
+		}
+		try
+		{
+			getStyledDocument().insertString(getStyledDocument().getLength(), "\n", ColorUtils.getStyle(BLACK, getStyledDocument()));
+		}
+		catch (BadLocationException e)
+		{
+			e.printStackTrace();
 		}
 	}
 }

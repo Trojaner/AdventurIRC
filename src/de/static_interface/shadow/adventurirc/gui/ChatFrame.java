@@ -35,27 +35,26 @@ public class ChatFrame extends JFrame
 		});
 		setSize((int) Toolkit.getDefaultToolkit().getScreenSize().getWidth()/2, (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight()/2);
 		getContentPane().add(content);
-		content.setBounds(5, 5, (int) getSize().getWidth()-5, (int) getSize().getHeight()-5);
+		content.setBounds(10, 5, (int) getSize().getWidth()-5, (int) getSize().getHeight()-10);
 	}
 	
 	private void addPrivateChatPanel(User u)
 	{
 		private_chats.put(u.getUserId(), new PrivateChatPanel(u));
-		content.add(private_chats.get(u.getUserId()));
+		content.add(u.getNick(), private_chats.get(u.getUserId()));
 		content.repaint();
 	}
 	
 	private void addPublicChatPanel(Channel c)
 	{
 		public_chats.put(c, new PublicChatPanel(c));
-		content.add(public_chats.get(c));
+		content.add(c.getName(), public_chats.get(c));
 		content.repaint();
 	}
 	
 	public PublicChatPanel getChannel(Channel c)
 	{
 		if ( public_chats.get(c) == null ) addPublicChatPanel(c);
-		System.out.println(public_chats.get(c));
 		return public_chats.get(c);
 	}
 	

@@ -19,7 +19,7 @@ public class PrivateChatPanel extends ChatPanel
 	@Override
 	public void resize()
 	{
-		textOutput.setBounds(0, 0, (int) this.getSize().getWidth(), (int) this.getSize().getHeight()-35);
+		textOutputScrollPane.setBounds(0, 0, (int) this.getSize().getWidth(), (int) this.getSize().getHeight()-35);
 		textInput.setBounds(0, (int) this.getSize().getHeight()-30, (int) this.getSize().getWidth(), 25);
 	}
 	
