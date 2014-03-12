@@ -8,7 +8,7 @@ public class AdventurIRC implements Runnable
 {
 	public static String nickname = FileManager.getString(FileManager.CFG_NICKNAME);
 	
-	public static final String VERSION = "AdventurIRC V1.0.2";
+	public static final String VERSION = "AdventurIRC V1.0.1.9";
 	
 	public static final ChatFrame mainFrame = new ChatFrame();
 	
