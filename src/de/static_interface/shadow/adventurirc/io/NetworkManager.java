@@ -34,15 +34,15 @@ public class NetworkManager
 												.buildConfiguration();
 		
 		bot = new PircBotX(config);
-//		new Thread(new Connection(bot)).start();
-//		try
-//		{
-//			Thread.sleep(1500);
-//		}
-//		catch (InterruptedException e)
-//		{
-//			e.printStackTrace();
-//		}
+		new Thread(new Connection(bot)).start();
+		try
+		{
+			Thread.sleep(1500);
+		}
+		catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}
 		AdventurIRC.mainFrame.getChannel(bot.getUserChannelDao().getChannel(NetworkManager.channelName));
 	}
 	
