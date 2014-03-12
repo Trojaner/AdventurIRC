@@ -6,7 +6,6 @@ import java.util.UUID;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
@@ -49,6 +48,7 @@ public class ChatFrame extends JFrame
 		getContentPane().add(content);
 		content.setBounds(10, 5, (int) getSize().getWidth()-5, (int) getSize().getHeight()-10);
 		content.addTab("Optionen", options);
+		content.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 	}
 	
 	@Override
@@ -90,7 +90,6 @@ class OptionsPane extends JPanel
 	private static final long serialVersionUID = 1L;
 	
 	JTextField userName = new JTextField(AdventurIRC.nickname);
-	JLabel userNameLabel = new JLabel("Nickname ändern");
 	JCheckBox doBeepCheckBox = new JCheckBox("<html>Einen Ton ausgeben, wenn der Nickname erwähnt wird.");
 	
 	boolean doBeep = Boolean.parseBoolean(FileManager.getString(FileManager.CFG_DOBEEP));
@@ -99,10 +98,10 @@ class OptionsPane extends JPanel
 	{
 		setLayout(null);
 		add(userName);
-		userName.setBounds(150, 5, 135, 25);
-		userNameLabel.setBounds(5, 5, 145, 25);
-		add(userNameLabel);
-		JButton userNameButton = new JButton();
+		userName.setBounds(5, 5, 135, 25);
+		JButton userNameButton = new JButton("Nickname ändern");
+		userNameButton.setBounds(145, 5, 150, 25);
+		add(userNameButton);
 		add(doBeepCheckBox);
 		doBeepCheckBox.setBounds(5, 35, 180, 40);
 		userNameButton.addActionListener(new ActionListener()
@@ -110,7 +109,6 @@ class OptionsPane extends JPanel
 			public void actionPerformed(ActionEvent e)
 			{
 				if ( userName.getText().trim().equals("") ) return;
-				
 				FileManager.setString(FileManager.CFG_NICKNAME, userName.getText());
 			}
 		});
@@ -119,6 +117,7 @@ class OptionsPane extends JPanel
 			public void actionPerformed(ActionEvent e)
 			{
 				doBeep = !doBeep;
+				FileManager.setString(FileManager.CFG_DOBEEP, String.valueOf(doBeep).toLowerCase());
 			}
 		});
 	}
