@@ -3,8 +3,10 @@ package de.static_interface.shadow.adventurirc.io;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import org.pircbotx.Channel;
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
+import org.pircbotx.User;
 import org.pircbotx.exception.IrcException;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
@@ -32,7 +34,7 @@ public class NetworkManager
 												.buildConfiguration();
 		
 		bot = new PircBotX(config);
-		new Thread(new Connection(bot)).start();
+		//new Thread(new Connection(bot)).start();
 		try
 		{
 			Thread.sleep(1500);
@@ -43,6 +45,18 @@ public class NetworkManager
 		}
 		AdventurIRC.mainFrame.getChannel(bot.getUserChannelDao().getChannel(NetworkManager.channelName));
 	}
+	
+	public static User getUser(String username)
+	{
+		return bot.getUserChannelDao().getUser(username);
+	}
+	
+	public static Channel joinChannel(String channelname)
+	{
+		bot.sendIRC().joinChannel(channelname);
+		return bot.getUserChannelDao().getChannel(channelname);
+	}
+	
 }
 class ChatListener extends ListenerAdapter<PircBotX>
 {

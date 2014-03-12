@@ -12,7 +12,8 @@ public class FileManager
 	private static final AdventurIRCConfiguration programConfiguration = new AdventurIRCConfiguration();
 
 	public static final String
-		CFG_NICKNAME = "nickname";
+		CFG_NICKNAME = "nickname",
+		CFG_DOBEEP = "beep";
 
 	public static String getString(String key)
 	{
