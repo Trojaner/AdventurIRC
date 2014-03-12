@@ -10,15 +10,16 @@ import de.static_interface.shadow.tameru.Configuration;
 public class FileManager
 {
 	private static final AdventurIRCConfiguration programConfiguration = new AdventurIRCConfiguration();
-	
+
 	public static final String
-		CFG_NICKNAME = "nickname";
-	
+		CFG_NICKNAME = "nickname",
+		CFG_DOBEEP = "beep";
+
 	public static String getString(String key)
 	{
 		return programConfiguration.getString(key);
 	}
-	
+
 	public static void setString(String key, String value)
 	{
 		programConfiguration.putString(key, value);
@@ -30,9 +31,9 @@ class AdventurIRCConfiguration extends Configuration
 	private static Path getAbsoluteHomePath()
 	{
 		final boolean isMSWindows = System.getProperty("os.name").toLowerCase().contains("windows");
-		
+
 		Path path;
-		
+
 		if ( isMSWindows )
 		{
 			path = Paths.get(System.getProperty("user.home")+File.separator+"AdventurIRC");
@@ -67,7 +68,7 @@ class AdventurIRCConfiguration extends Configuration
 		path = Paths.get(path.toAbsolutePath().toString()+File.separator+"config");
 		return path;
 	}
-	
+
 	public AdventurIRCConfiguration()
 	{
 		super(getAbsoluteHomePath());

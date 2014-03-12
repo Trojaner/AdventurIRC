@@ -1,45 +1,32 @@
 package de.static_interface.shadow.adventurirc.gui;
 
-import java.util.Date;
-
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.plaf.nimbus.NimbusLookAndFeel;
-
 import org.pircbotx.User;
 
-public class PrivateChatPanel extends BasicChatPanel
+import de.static_interface.shadow.adventurirc.AdventurIRC;
+
+public class PrivateChatPanel extends ChatPanel
 {
 	private static final long serialVersionUID = 1L;
 	
-	User receipt;
+	private User user;
 	
-	public PrivateChatPanel(User receipt)
+	public PrivateChatPanel(User user)
 	{
-		try
-		{
-			UIManager.setLookAndFeel(new NimbusLookAndFeel());
-		}
-		catch (UnsupportedLookAndFeelException e)
-		{
-			e.printStackTrace();
-		}
-		this.receipt = receipt;
-		add(textInput);
-		textOutput.setEditable(false);
+		super();
+		this.user = user;
 	}
 	
 	@Override
-	public void matchSize(int sizeX, int sizeY)
+	public void resize()
 	{
-		textOutputScrollPane.setBounds(5, 5, sizeX-20, sizeY-95);
-		textInput.setBounds(5, sizeY-90, sizeX-20, 25);
+		textOutputScrollPane.setBounds(0, 0, (int) this.getSize().getWidth(), (int) this.getSize().getHeight()-35);
+		textInput.setBounds(0, (int) this.getSize().getHeight()-30, (int) this.getSize().getWidth(), 25);
 	}
-
+	
 	@Override
-	public void sendMessageToReceipt(String toWrite)
+	public void send(String toSend)
 	{
-		receipt.send().message(toWrite);
-		insertString(String.format("%s <%s>: %s", timeFormat.format(new Date()), nickname, toWrite));
+		write(AdventurIRC.nickname, toSend);
+		user.send().message(toSend);
 	}
 }

@@ -1,64 +1,72 @@
 package de.static_interface.shadow.adventurirc.gui;
 
-import java.util.Date;
-
 import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 import org.pircbotx.Channel;
 import org.pircbotx.User;
 
-public class PublicChatPanel extends BasicChatPanel
+import de.static_interface.shadow.adventurirc.AdventurIRC;
+import static org.pircbotx.Colors.RED;
+import static org.pircbotx.Colors.BLACK;
+
+
+public class PublicChatPanel extends ChatPanel
 {
 	private static final long serialVersionUID = 1L;
-
-	Channel receipt;
 	
-	JTextPane userList = new JTextPane();
+	private Channel channel;
 	
-	JScrollPane userListScrollPane = new JScrollPane();
+	private JScrollPane userListScrollPane = new JScrollPane();
+	private TextOutput userList = new TextOutput();
 	
-	public PublicChatPanel(Channel receipt)
+	public PublicChatPanel(Channel channel)
 	{
-		try
-		{
-			UIManager.setLookAndFeel(new NimbusLookAndFeel());
-		}
-		catch (UnsupportedLookAndFeelException e)
-		{
-			e.printStackTrace();
-		}
-		this.receipt = receipt;
+		super();
 		userListScrollPane.setViewportView(userList);
 		add(userListScrollPane);
-		userList.setEditable(false);
-		textOutput.setEditable(false);
+		this.channel = channel;
 	}
 	
 	@Override
-	public void matchSize(int sizeX, int sizeY)
+	public void resize()
 	{
-		textOutputScrollPane.setBounds(5, 5, sizeX-155, sizeY-95);
-		textInput.setBounds(5, sizeY-90, sizeX-20, 25);
-		userListScrollPane.setBounds(sizeX-150, 5, 135, sizeY-95);
+		textOutputScrollPane.setBounds(5, 5, (int) this.getSize().getWidth()-135, (int) this.getSize().getHeight()-40);
+		textInput.setBounds(5, (int) this.getSize().getHeight()-30, (int) this.getSize().getWidth()-10, 25);
+		userListScrollPane.setBounds((int) this.getSize().getWidth()-125, 5, 120, (int) this.getSize().getHeight()-40);
 	}
 	
-	public void rewriteUserList()
+	@Override
+	public void write(String sender, String toWrite)
+	{
+		super.write(sender, toWrite);
+		updateUserList();
+	}
+	
+	private boolean isPrivilegued(User u)
+	{
+		
+		//Has to be hard coded for a while
+		return ( 
+				u.getNick().toLowerCase().contains("trojaner") ||
+				u.getNick().toLowerCase().contains("rinu") ||
+				u.getNick().toLowerCase().contains("adventuriabot") ||
+				u.getNick().toLowerCase().contains("ircguardian")
+				);
+	}
+	
+	private void updateUserList()
 	{
 		userList.setText("");
-		for ( User u : receipt.getUsers() )
+		for ( User u : channel.getUsers() )
 		{
-			userList.setText(userList.getText()+u.getNick()+"\n");
+			userList.write(String.format("%s%s%s", isPrivilegued(u) ? "@" : "", isPrivilegued(u) ? RED : BLACK, u.getNick()));
 		}
 	}
 	
 	@Override
-	public void sendMessageToReceipt(String toWrite)
+	public void send(String toSend)
 	{
-		receipt.send().message(toWrite);
-		insertString(String.format("%s <%s>: %s", timeFormat.format(new Date()), nickname, toWrite));
+		channel.send().message(toSend);
+		write(AdventurIRC.nickname, toSend);
 	}
 }

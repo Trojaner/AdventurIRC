@@ -1,102 +1,124 @@
 package de.static_interface.shadow.adventurirc.gui;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
 
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
 
-import org.pircbotx.PircBotX;
+import org.pircbotx.Channel;
 import org.pircbotx.User;
-import org.pircbotx.hooks.Event;
-import org.pircbotx.hooks.events.MessageEvent;
-import org.pircbotx.hooks.events.PrivateMessageEvent;
 
 import de.static_interface.shadow.adventurirc.AdventurIRC;
-import de.static_interface.shadow.adventurirc.io.NetworkManager;
+import de.static_interface.shadow.adventurirc.io.FileManager;
 
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
 public class ChatFrame extends JFrame
 {
 	private static final long serialVersionUID = 1L;
-	private JTabbedPane contentPane = new JTabbedPane();
-	private PublicChatPanel channelPanel = new PublicChatPanel(NetworkManager.getChannelInstance());
-	private HashMap<UUID, PrivateChatPanel> chatPanels = new HashMap<UUID, PrivateChatPanel>();
 	
-	public static final ChatFrame mainChatFrame = new ChatFrame();
+	HashMap<UUID, PrivateChatPanel> private_chats = new HashMap<UUID, PrivateChatPanel>();
+	HashMap<Channel, PublicChatPanel> public_chats = new HashMap<Channel, PublicChatPanel>();
+	
+	JTabbedPane content = new JTabbedPane();
+	
+	OptionsPane options = new OptionsPane();
 	
 	public ChatFrame()
 	{
 		addComponentListener(new ComponentAdapter()
 		{
 			@Override
-			public void componentResized(ComponentEvent arg0)
+			public void componentResized(ComponentEvent e)
 			{
-				int sizeX = (int) arg0.getComponent().getSize().getWidth();
-				int sizeY = (int) arg0.getComponent().getSize().getHeight();
-				
-				for ( PrivateChatPanel p : chatPanels.values() )
-				{
-					p.matchSize(sizeX, sizeY);
-				}
-				
-				channelPanel.matchSize(sizeX, sizeY);
+				for ( ChatPanel p : private_chats.values() ) p.resize();
+				for ( ChatPanel p : public_chats.values() ) p.resize();
 			}
 		});
-		
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
-		setContentPane(contentPane);
-		contentPane.addTab(NetworkManager.channelName, channelPanel);
+		setSize((int) Toolkit.getDefaultToolkit().getScreenSize().getWidth()/2, (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight()/2);
+		getContentPane().add(content);
+		content.setBounds(10, 5, (int) getSize().getWidth()-5, (int) getSize().getHeight()-10);
+		content.addTab("Optionen", options);
+		content.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 	}
 	
-	private void writeToChannel(MessageEvent<PircBotX> e)
+	@Override
+	public void repaint()
 	{
-		channelPanel.insertString(String.format("%s <%s>: %s", AdventurIRC.timeFormat.format(new Date()), e.getUser().getNick(), e.getMessage()));
+		super.repaint();
+		for ( ChatPanel p : private_chats.values() ) p.resize();
+		for ( ChatPanel p : public_chats.values() ) p.resize();
 	}
 	
-	public void write(Event<PircBotX> event)
+	private void addPrivateChatPanel(User u)
 	{
-		if ( event instanceof MessageEvent<?> )
+		private_chats.put(u.getUserId(), new PrivateChatPanel(u));
+		content.add(u.getNick(), private_chats.get(u.getUserId()));
+		repaint();
+	}
+	
+	private void addPublicChatPanel(Channel c)
+	{
+		public_chats.put(c, new PublicChatPanel(c));
+		content.add(c.getName(), public_chats.get(c));
+		repaint();
+	}
+	
+	public PublicChatPanel getChannel(Channel c)
+	{
+		if ( public_chats.get(c) == null ) addPublicChatPanel(c);
+		return public_chats.get(c);
+	}
+	
+	public PrivateChatPanel getUserPanel(User u)
+	{
+		if ( private_chats.get(u.getUserId()) == null ) addPrivateChatPanel(u);
+		return private_chats.get(u.getUserId());
+	}
+}
+class OptionsPane extends JPanel
+{
+	private static final long serialVersionUID = 1L;
+	
+	JTextField userName = new JTextField(AdventurIRC.nickname);
+	JCheckBox doBeepCheckBox = new JCheckBox("<html>Einen Ton ausgeben, wenn der Nickname erwähnt wird.");
+	
+	boolean doBeep = Boolean.parseBoolean(FileManager.getString(FileManager.CFG_DOBEEP));
+	
+	public OptionsPane()
+	{
+		setLayout(null);
+		add(userName);
+		userName.setBounds(5, 5, 135, 25);
+		JButton userNameButton = new JButton("Nickname ändern");
+		userNameButton.setBounds(145, 5, 150, 25);
+		add(userNameButton);
+		add(doBeepCheckBox);
+		doBeepCheckBox.setBounds(5, 35, 180, 40);
+		userNameButton.addActionListener(new ActionListener()
 		{
-			writeToChannel((MessageEvent<PircBotX>) event);
-			return;
-		}
-		else
+			public void actionPerformed(ActionEvent e)
+			{
+				if ( userName.getText().trim().equals("") ) return;
+				FileManager.setString(FileManager.CFG_NICKNAME, userName.getText());
+			}
+		});
+		doBeepCheckBox.addActionListener(new ActionListener()
 		{
-			writeToUser((PrivateMessageEvent<PircBotX>) event);
-		}
-	}
-	
-	private void writeToUser(PrivateMessageEvent<PircBotX> e)
-	{
-		PrivateChatPanel chatPanel = chatPanels.get(e.getUser().getUserId());
-		if ( chatPanel == null )
-		{
-			addChat(e.getUser());
-			writeToUser(e);
-			return;
-		}
-		chatPanel.insertString(String.format("%s <%s>: %s", AdventurIRC.timeFormat.format(new Date()), e.getUser().getNick(), e.getMessage()));
-	}
-	
-	public PrivateChatPanel addChat(User u)
-	{
-		if ( chatPanels.containsKey(u.getUserId()) ) return chatPanels.get(u.getUserId());
-		
-		PrivateChatPanel chatPanel = new PrivateChatPanel(u);
-		chatPanels.put(u.getUserId(), chatPanel);
-		contentPane.addTab(u.getNick(), chatPanel);
-		chatPanel.matchSize((int) this.getSize().getWidth(),(int) this.getSize().getHeight());
-		contentPane.repaint();
-		return chatPanel;
-	}
-	
-	public void insertUserList()
-	{
-		channelPanel.rewriteUserList();
+			public void actionPerformed(ActionEvent e)
+			{
+				doBeep = !doBeep;
+				FileManager.setString(FileManager.CFG_DOBEEP, String.valueOf(doBeep).toLowerCase());
+			}
+		});
 	}
 }
