@@ -60,6 +60,7 @@ public class NetworkManager
 	public static void disconnect()
 	{
 		bot.sendIRC().quitServer(AdventurIRC.VERSION);
+		System.exit(0);
 	}
 }
 class ChatListener extends ListenerAdapter<PircBotX>
