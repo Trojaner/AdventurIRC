@@ -27,7 +27,8 @@ public class Bootstrap extends JFrame
 	
 	public static void main(String[] args)
 	{
-		String remoteVersion = getRemoveVersion();
+		String remoteVersion = getRemoteVersion();
+		System.out.println(remoteVersion.charAt(5)+" "+remoteVersion.charAt(7));
 		if ( !remoteVersion.equalsIgnoreCase(AdventurIRC.VERSION.substring(AdventurIRC.VERSION.indexOf(' ')+1)) )
 		{
 			if ( downloadUpdate(Integer.parseInt(""+remoteVersion.charAt(5)), Integer.parseInt(""+remoteVersion.charAt(7))) )
@@ -49,7 +50,7 @@ public class Bootstrap extends JFrame
 		}
 	}
 	
-	private static String getRemoveVersion()
+	private static String getRemoteVersion()
 	{
 		try
 		{
