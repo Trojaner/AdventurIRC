@@ -57,6 +57,10 @@ public class NetworkManager
 		return bot.getUserChannelDao().getChannel(channelname);
 	}
 	
+	public static void disconnect()
+	{
+		bot.sendIRC().quitServer(AdventurIRC.VERSION);
+	}
 }
 class ChatListener extends ListenerAdapter<PircBotX>
 {

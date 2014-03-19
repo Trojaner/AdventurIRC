@@ -15,12 +15,15 @@ import org.pircbotx.User;
 
 import de.static_interface.shadow.adventurirc.AdventurIRC;
 import de.static_interface.shadow.adventurirc.io.FileManager;
+import de.static_interface.shadow.adventurirc.io.NetworkManager;
 
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class ChatFrame extends JFrame
 {
@@ -35,6 +38,14 @@ public class ChatFrame extends JFrame
 	
 	public ChatFrame()
 	{
+		addWindowListener(new WindowAdapter()
+		{
+			@Override
+			public void windowClosing(WindowEvent e)
+			{
+				NetworkManager.disconnect();
+			}
+		});
 		addComponentListener(new ComponentAdapter()
 		{
 			@Override
