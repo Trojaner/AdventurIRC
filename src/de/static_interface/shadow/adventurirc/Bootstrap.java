@@ -12,6 +12,8 @@ import de.static_interface.shadow.adventurirc.io.FileManager;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
@@ -28,10 +30,11 @@ public class Bootstrap extends JFrame
 	public static void main(String[] args)
 	{
 		String remoteVersion = getRemoteVersion();
-		System.out.println(remoteVersion.charAt(5)+" "+remoteVersion.charAt(7));
-		if ( !remoteVersion.equalsIgnoreCase(AdventurIRC.VERSION.substring(AdventurIRC.VERSION.indexOf(' ')+1)) )
+		if ( !AdventurIRC.VERSION.substring(AdventurIRC.VERSION.indexOf(' ')+1).equals(remoteVersion) )
 		{
-			if ( downloadUpdate(Integer.parseInt(""+remoteVersion.charAt(5)), Integer.parseInt(""+remoteVersion.charAt(7))) )
+			int majorRemoteVersion = Integer.parseInt(""+remoteVersion.charAt(5));
+			int minorRemoteVersion = Integer.parseInt(""+remoteVersion.charAt(7));
+			if ( downloadUpdate(majorRemoteVersion, minorRemoteVersion) )
 			{
 				File file = new File(String.format("AdventurIRC_1.0.%d.%d.jar", Integer.parseInt(""+remoteVersion.charAt(5)), Integer.parseInt(""+remoteVersion.charAt(7))));
 				new UpdateFinishedNotification(file.getAbsolutePath());
@@ -133,6 +136,15 @@ class UpdateFinishedNotification extends JFrame
 	
 	public UpdateFinishedNotification(String path)
 	{
+		addWindowListener(new WindowAdapter()
+		{
+			@Override
+			public void windowClosing(WindowEvent e)
+			{
+				System.exit(0);
+			}
+		});
+		
 		try
 		{
 			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels())
