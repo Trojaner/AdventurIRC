@@ -16,7 +16,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
@@ -77,15 +76,9 @@ public class Bootstrap extends JFrame
 		try
 		{
 			URL url = new URL(String.format("http://shadow.static-interface.de/VERSIONS/1.0/%d/AdventurIRC-1.0.%d.%d.jar", major, major, minor));
-			InputStreamReader reader = new InputStreamReader(url.openStream());
-			FileWriter writer = new FileWriter(new File(String.format("AdventurIRC-1.0.%d.%d.jar", major, minor)));
-			int read = reader.read();
-			while ( read != -1 )
-			{
-				writer.write(read);
-				read = reader.read();
-			}
-			writer.close();
+			
+			org.apache.commons.io.FileUtils.copyURLToFile(url, new File(String.format("AdventurIRC-1.0.%d.%d.jar", major, minor)));
+			
 			return (new File(String.format("AdventurIRC-1.0.%d.%d.jar", major, minor)).exists());
 		}
 		catch (MalformedURLException e)
