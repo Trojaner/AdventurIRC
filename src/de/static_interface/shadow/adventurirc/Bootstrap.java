@@ -73,9 +73,9 @@ public class Bootstrap extends JFrame
 	{
 		try
 		{
-			URL url = new URL(String.format("http://shadow.static-interface.de/VERSIONS/1.0/%d/AdventurIRC_1.0.%d.%d.jar", major, major, minor));
+			URL url = new URL(String.format("http://shadow.static-interface.de/VERSIONS/1.0/%d/AdventurIRC-1.0.%d.%d.jar", major, major, minor));
 			InputStreamReader reader = new InputStreamReader(url.openStream());
-			FileWriter writer = new FileWriter(new File(String.format("AdventurIRC_1.0.%d.%d.jar", major, minor)));
+			FileWriter writer = new FileWriter(new File(String.format("AdventurIRC-1.0.%d.%d.jar", major, minor)));
 			int read = reader.read();
 			while ( read != -1 )
 			{
@@ -83,7 +83,7 @@ public class Bootstrap extends JFrame
 				read = reader.read();
 			}
 			writer.close();
-			return (new File(String.format("AdventurIRC_1.0.%d.%d.jar", major, minor)).exists());
+			return (new File(String.format("AdventurIRC-1.0.%d.%d.jar", major, minor)).exists());
 		}
 		catch (MalformedURLException e)
 		{

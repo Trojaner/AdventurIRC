@@ -43,7 +43,14 @@ public class ChatFrame extends JFrame
 			@Override
 			public void windowClosing(WindowEvent e)
 			{
-				NetworkManager.disconnect();
+				try
+				{
+					NetworkManager.disconnect();	
+				}
+				catch (RuntimeException e1)
+				{
+				}
+				System.exit(0);
 			}
 		});
 		addComponentListener(new ComponentAdapter()

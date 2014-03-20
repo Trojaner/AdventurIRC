@@ -34,7 +34,7 @@ public class NetworkManager
 												.buildConfiguration();
 		
 		bot = new PircBotX(config);
-		//new Thread(new Connection(bot)).start();
+		new Thread(new Connection(bot)).start();
 		try
 		{
 			Thread.sleep(1500);
