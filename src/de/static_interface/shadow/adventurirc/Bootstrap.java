@@ -75,7 +75,7 @@ public class Bootstrap extends JFrame
 	{
 		try
 		{
-			URL url = new URL(String.format("http://shadow.static-interface.de/VERSIONS/1.0/%d/AdventurIRC-1.0.%d.%d.jar", major, major, minor));
+			URL url = new URL(String.format("http://shadow.static-interface.de/VERSIONS/AdventurIRC_Version/1.0/%d/AdventurIRC-1.0.%d.%d.jar", major, major, minor));
 			
 			org.apache.commons.io.FileUtils.copyURLToFile(url, new File(String.format("AdventurIRC-1.0.%d.%d.jar", major, minor)));
 			
