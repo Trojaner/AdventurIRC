@@ -56,7 +56,7 @@ public class Bootstrap extends JFrame
 	{
 		try
 		{
-			URL url = new URL("http://shadow.static-interface.de/VERSION");
+			URL url = new URL("http://shadow.static-interface.de/AdventurIRC_Latest_Version");
 			BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
 			String read = reader.readLine();
 			reader.close();
