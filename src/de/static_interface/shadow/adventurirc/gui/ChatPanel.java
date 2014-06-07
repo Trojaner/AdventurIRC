@@ -85,6 +85,7 @@ public abstract class ChatPanel extends JPanel
 			String toWrite = toCheck.substring(toCheck.indexOf(' '));
 			toWrite = toWrite.substring(toWrite.indexOf(' '));
 			panel.send(toWrite);
+			return;
 		}
 		if ( toCheck.toLowerCase().startsWith("/join ") )
 		{
@@ -95,7 +96,18 @@ public abstract class ChatPanel extends JPanel
 			}
 			
 			AdventurIRC.mainFrame.getChannel(NetworkManager.joinChannel(toCheck.split(" ")[1])).write("[AdventurIRC] ", AdventurIRC.nickname+" ist dem Channel beigetreten !");
+			return;
+		}
+		if ( toCheck.toLowerCase().startsWith("/nick") )
+		{
+			if ( toCheck.split(" ").length == 1 )
+			{
+				write("[AdventurIRC] ", "Du musst einen neuen Nickname angeben !");
+				return;
+			}
 			
+			NetworkManager.rename(toCheck.split(" ")[1]);
+			return;
 		}
 	}
 }

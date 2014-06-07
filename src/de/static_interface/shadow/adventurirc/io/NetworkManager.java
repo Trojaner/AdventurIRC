@@ -51,6 +51,11 @@ public class NetworkManager
 		return bot.getUserChannelDao().getUser(username);
 	}
 	
+	public static void rename(String newnick)
+	{
+		bot.sendIRC().changeNick(newnick);
+	}
+	
 	public static Channel joinChannel(String channelname)
 	{
 		bot.sendIRC().joinChannel(channelname);
@@ -60,7 +65,6 @@ public class NetworkManager
 	public static void disconnect()
 	{
 		bot.sendIRC().quitServer(AdventurIRC.VERSION);
-		System.exit(0);
 	}
 }
 class ChatListener extends ListenerAdapter<PircBotX>

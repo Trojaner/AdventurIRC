@@ -122,12 +122,14 @@ class OptionsPane extends JPanel
 		add(userNameButton);
 		add(doBeepCheckBox);
 		doBeepCheckBox.setBounds(5, 35, 180, 40);
+		doBeepCheckBox.setSelected(doBeep);
 		userNameButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
 				if ( userName.getText().trim().equals("") ) return;
 				FileManager.setString(FileManager.CFG_NICKNAME, userName.getText());
+				NetworkManager.rename(FileManager.getString(FileManager.CFG_NICKNAME));
 			}
 		});
 		doBeepCheckBox.addActionListener(new ActionListener()
