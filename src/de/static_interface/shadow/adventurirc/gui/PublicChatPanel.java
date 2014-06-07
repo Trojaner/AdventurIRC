@@ -49,6 +49,7 @@ public class PublicChatPanel extends ChatPanel
 		return ( 
 				u.getNick().toLowerCase().contains("trojaner") ||
 				u.getNick().toLowerCase().contains("rinu") ||
+				u.getNick().toLowerCase().contains("shadow") ||
 				u.getNick().toLowerCase().contains("adventuriabot") ||
 				u.getNick().toLowerCase().contains("ircguardian")
 				);
