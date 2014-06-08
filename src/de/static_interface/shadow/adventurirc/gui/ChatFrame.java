@@ -109,6 +109,7 @@ class OptionsPane extends JPanel
 	
 	JTextField userName = new JTextField(AdventurIRC.nickname);
 	JCheckBox doBeepCheckBox = new JCheckBox("<html>Einen Ton ausgeben, wenn der Nickname erwähnt wird.");
+	JButton disconnectButton = new JButton("<html>Verbindung trennen & Programm schließen");
 	
 	boolean doBeep = Boolean.parseBoolean(FileManager.getString(FileManager.CFG_DOBEEP));
 	
@@ -119,10 +120,12 @@ class OptionsPane extends JPanel
 		userName.setBounds(5, 5, 135, 25);
 		JButton userNameButton = new JButton("Nickname ändern");
 		userNameButton.setBounds(145, 5, 150, 25);
+		disconnectButton.setBounds(5, 80, 180, 45);
+		doBeepCheckBox.setBounds(5, 35, 180, 40);
 		add(userNameButton);
 		add(doBeepCheckBox);
-		doBeepCheckBox.setBounds(5, 35, 180, 40);
-		doBeepCheckBox.setSelected(doBeep);
+		add(disconnectButton);
+		doBeepCheckBox.setSelected(Boolean.parseBoolean(FileManager.getString(FileManager.CFG_DOBEEP)));
 		userNameButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -136,8 +139,17 @@ class OptionsPane extends JPanel
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				doBeep = !doBeep;
+				doBeep = doBeepCheckBox.isSelected();
 				FileManager.setString(FileManager.CFG_DOBEEP, String.valueOf(doBeep).toLowerCase());
+			}
+		});
+		disconnectButton.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				NetworkManager.disconnect();
+				AdventurIRC.mainFrame.dispose();
 			}
 		});
 	}

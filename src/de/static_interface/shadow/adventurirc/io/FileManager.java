@@ -22,6 +22,7 @@ public class FileManager
 
 	public static void setString(String key, String value)
 	{
+		programConfiguration.deleteString(key);
 		programConfiguration.putString(key, value);
 		programConfiguration.save();
 	}

@@ -53,7 +53,14 @@ public class NetworkManager
 	
 	public static void rename(String newnick)
 	{
-		bot.sendIRC().changeNick(newnick);
+		try
+		{
+			bot.sendIRC().changeNick(newnick);
+		}
+		catch ( RuntimeException e )
+		{
+			//If we're not connected to a server
+		}
 	}
 	
 	public static Channel joinChannel(String channelname)
@@ -64,7 +71,14 @@ public class NetworkManager
 	
 	public static void disconnect()
 	{
-		bot.sendIRC().quitServer(AdventurIRC.VERSION);
+		try
+		{
+			bot.sendIRC().quitServer(AdventurIRC.VERSION);
+		}
+		catch ( RuntimeException e )
+		{
+			//If we're not connected to a server
+		}
 	}
 }
 class ChatListener extends ListenerAdapter<PircBotX>
