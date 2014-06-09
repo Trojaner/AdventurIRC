@@ -47,11 +47,12 @@ public class PublicChatPanel extends ChatPanel
 		
 		//Has to be hard coded for a while
 		return ( 
-				u.getNick().toLowerCase().contains("trojaner") ||
-				u.getNick().toLowerCase().contains("rinu") ||
-				u.getNick().toLowerCase().contains("shadow") ||
-				u.getNick().toLowerCase().contains("adventuriabot") ||
-				u.getNick().toLowerCase().contains("ircguardian")
+				u.getNick().toLowerCase().equalsIgnoreCase("trojaner") ||
+				u.getNick().toLowerCase().equalsIgnoreCase("rinukkusu") ||
+				u.getNick().toLowerCase().equalsIgnoreCase("shadow") ||
+				u.getNick().toLowerCase().equalsIgnoreCase("adventuriabot") ||
+				u.getNick().toLowerCase().equalsIgnoreCase("ircguardian") ||
+				u.isIrcop()
 				);
 	}
 	
