@@ -12,6 +12,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -23,10 +24,12 @@ import de.static_interface.shadow.adventurirc.io.NetworkManager;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 
 public abstract class ChatPanel extends JPanel
 {
 	private static final long serialVersionUID = 1L;
+	private final AudioInputStream audioInputStream = getAudioInputStream();
 	
 	TextOutput textOutput = new TextOutput();
 	JScrollPane textOutputScrollPane = new JScrollPane();
@@ -71,12 +74,27 @@ public abstract class ChatPanel extends JPanel
 		textOutput.write(String.format("%s%s%s: %s%s", new SimpleDateFormat("[HH:MM:ss] ").format(new Date()), sender.equals(AdventurIRC.nickname) ? DARK_GREEN : BLACK, sender, BLACK, toWrite));
 	}
 	
+	private final AudioInputStream getAudioInputStream()
+	{
+		try
+		{
+			return AudioSystem.getAudioInputStream(getClass().getResourceAsStream("/de/static_interface/shadow/adventurirc/Randomize.wav"));
+		}
+		catch (UnsupportedAudioFileException e)
+		{
+			e.printStackTrace();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public void sound()
 	{
 		try
 		{
-			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(getClass().getResourceAsStream("/de/static_interface/shadow/adventurirc/Randomize.wav"));
-			System.out.println(getClass().getResourceAsStream("/de/static_interface/shadow/adventurirc/Randomize.wav"));
 			AudioFormat format = audioInputStream.getFormat();
 			int size = (int) (format.getFrameSize()*audioInputStream.getFrameLength());
 			byte[] audio = new byte[size];
@@ -85,6 +103,7 @@ public abstract class ChatPanel extends JPanel
 			Clip clip = (Clip) AudioSystem.getLine(info);
 			clip.open(format, audio, 0, size);
 			clip.start();
+			audio = new byte[size];
 		}
 		catch (Exception e)
 		{
