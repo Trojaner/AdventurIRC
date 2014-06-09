@@ -22,6 +22,7 @@ import org.pircbotx.User;
 import de.static_interface.shadow.adventurirc.AdventurIRC;
 import de.static_interface.shadow.adventurirc.io.NetworkManager;
 
+import java.awt.Toolkit;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
@@ -93,6 +94,12 @@ public abstract class ChatPanel extends JPanel
 	
 	public void sound()
 	{
+		if ( audioInputStream == null )
+		{
+			Toolkit.getDefaultToolkit().beep();
+			return;
+		}
+		
 		try
 		{
 			AudioFormat format = audioInputStream.getFormat();
@@ -104,6 +111,7 @@ public abstract class ChatPanel extends JPanel
 			clip.open(format, audio, 0, size);
 			clip.start();
 			audio = new byte[size];
+			audioInputStream.reset();
 		}
 		catch (Exception e)
 		{
