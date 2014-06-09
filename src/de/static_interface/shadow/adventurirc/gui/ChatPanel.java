@@ -2,10 +2,16 @@ package de.static_interface.shadow.adventurirc.gui;
 
 import static org.pircbotx.Colors.BLACK;
 import static org.pircbotx.Colors.DARK_GREEN;
+import static org.pircbotx.Colors.RED;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -15,7 +21,6 @@ import org.pircbotx.User;
 import de.static_interface.shadow.adventurirc.AdventurIRC;
 import de.static_interface.shadow.adventurirc.io.NetworkManager;
 
-import java.awt.Toolkit;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
@@ -57,10 +62,32 @@ public abstract class ChatPanel extends JPanel
 	
 	public void write(String sender, String toWrite)
 	{
-		textOutput.write(String.format("%s%s%s: %s%s", new SimpleDateFormat("[HH:MM:ss] ").format(new Date()), sender.equals(AdventurIRC.nickname) ? DARK_GREEN : BLACK, sender, BLACK, toWrite));
-		if ( !sender.equals(AdventurIRC.nickname) && AdventurIRC.mainFrame.options.doBeep && toWrite.contains(AdventurIRC.nickname) )
+		if ( toWrite.contains(AdventurIRC.nickname) ) if ( !sender.equals(AdventurIRC.nickname) && AdventurIRC.mainFrame.options.doBeep )
 		{
-			Toolkit.getDefaultToolkit().beep();
+			textOutput.write(String.format("%s%s%s: %s%s", new SimpleDateFormat("[HH:MM:ss] ").format(new Date()), sender.equals(AdventurIRC.nickname) ? DARK_GREEN : RED, sender, RED, toWrite));
+			sound();
+			return;
+		}
+		textOutput.write(String.format("%s%s%s: %s%s", new SimpleDateFormat("[HH:MM:ss] ").format(new Date()), sender.equals(AdventurIRC.nickname) ? DARK_GREEN : BLACK, sender, BLACK, toWrite));
+	}
+	
+	public void sound()
+	{
+		try
+		{
+			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(getClass().getResourceAsStream("/de/static_interface/shadow/adventurirc/Randomize.wav"));
+			System.out.println(getClass().getResourceAsStream("/de/static_interface/shadow/adventurirc/Randomize.wav"));
+			AudioFormat format = audioInputStream.getFormat();
+			int size = (int) (format.getFrameSize()*audioInputStream.getFrameLength());
+			byte[] audio = new byte[size];
+			DataLine.Info info = new DataLine.Info(Clip.class, format, size);
+			audioInputStream.read(audio, 0, size);
+			Clip clip = (Clip) AudioSystem.getLine(info);
+			clip.open(format, audio, 0, size);
+			clip.start();
+		}
+		catch (Exception e)
+		{
 		}
 	}
 	
