@@ -149,7 +149,7 @@ public abstract class ChatPanel extends JPanel
 				return;
 			}
 			
-			AdventurIRC.mainFrame.getChannel(NetworkManager.joinChannel(toCheck.split(" ")[1])).write("[AdventurIRC] ", AdventurIRC.nickname+" ist dem Channel beigetreten !");
+			AdventurIRC.mainFrame.getChannelPanel(NetworkManager.joinChannel(toCheck.split(" ")[1])).write("[AdventurIRC] ", AdventurIRC.nickname+" ist dem Channel beigetreten !");
 			return;
 		}
 		if ( toCheck.toLowerCase().startsWith("/nick") )

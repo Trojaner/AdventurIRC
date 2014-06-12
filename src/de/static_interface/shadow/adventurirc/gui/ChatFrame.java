@@ -91,7 +91,7 @@ public class ChatFrame extends JFrame
 		repaint();
 	}
 	
-	public PublicChatPanel getChannel(Channel c)
+	public PublicChatPanel getChannelPanel(Channel c)
 	{
 		if ( public_chats.get(c) == null ) addPublicChatPanel(c);
 		return public_chats.get(c);
