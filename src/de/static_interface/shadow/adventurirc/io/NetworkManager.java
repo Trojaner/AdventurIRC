@@ -2,108 +2,50 @@ package de.static_interface.shadow.adventurirc.io;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Locale;
 
-import org.pircbotx.Channel;
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
-import org.pircbotx.User;
 import org.pircbotx.exception.IrcException;
-import org.pircbotx.hooks.ListenerAdapter;
-import org.pircbotx.hooks.events.MessageEvent;
-import org.pircbotx.hooks.events.PrivateMessageEvent;
 
 import de.static_interface.shadow.adventurirc.AdventurIRC;
 
 public class NetworkManager
 {
-	private static PircBotX bot;
-	
-	public static String channelName = "#adventuriabot";
-	
-	public static void connect(String username)
+	//server_hostname
+	private static HashMap<String, PircBotX> servers = new HashMap<String, PircBotX>();
+
+	public static void connectToServer(String hostname, int port, String username)
 	{
-		Configuration<PircBotX> config = new Configuration.Builder<PircBotX>()
-												.setName(username)
-												.setFinger(username)
-												.setVersion(AdventurIRC.VERSION)
-												.addListener(new ChatListener())
-												.setLogin(username)
-												.addAutoJoinChannel(channelName)
-												.setEncoding(StandardCharsets.UTF_8)
-												.setServer("irc.adventuria.eu", 6667)
-												.buildConfiguration();
+		Configuration<PircBotX> cfg = new Configuration.Builder<PircBotX>()
+									.setName(username)
+									.setServer(hostname, port)
+									.setFinger("You shall not finger.")
+									.setVersion(AdventurIRC.VERSION)
+									.setEncoding(StandardCharsets.UTF_8)
+									.setLogin(username)
+									.setLocale(Locale.GERMAN)
+									.buildConfiguration();
+		PircBotX bot = new PircBotX(cfg);
+		servers.put(hostname, bot);
+	}
+
+	public static void connectToServerWithPassword(String hostname, int port, String username, String password)
+	{
 		
-		bot = new PircBotX(config);
-		new Thread(new Connection(bot)).start();
-		try
-		{
-			Thread.sleep(1500);
-		}
-		catch (InterruptedException e)
-		{
-			e.printStackTrace();
-		}
-		AdventurIRC.mainFrame.getChannel(bot.getUserChannelDao().getChannel(NetworkManager.channelName));
-	}
-	
-	public static User getUser(String username)
-	{
-		return bot.getUserChannelDao().getUser(username);
-	}
-	
-	public static void rename(String newnick)
-	{
-		try
-		{
-			bot.sendIRC().changeNick(newnick);
-		}
-		catch ( RuntimeException e )
-		{
-			//If we're not connected to a server
-		}
-	}
-	
-	public static Channel joinChannel(String channelname)
-	{
-		bot.sendIRC().joinChannel(channelname);
-		return bot.getUserChannelDao().getChannel(channelname);
-	}
-	
-	public static void disconnect()
-	{
-		try
-		{
-			bot.sendIRC().quitServer(AdventurIRC.VERSION);
-		}
-		catch ( RuntimeException e )
-		{
-			//If we're not connected to a server
-		}
 	}
 }
-class ChatListener extends ListenerAdapter<PircBotX>
-{
-	@Override
-	public void onMessage(MessageEvent<PircBotX> event) throws Exception
-	{
-		AdventurIRC.mainFrame.getChannel(event.getChannel()).write(event.getUser().getNick(), event.getMessage());
-	}
-	
-	@Override
-	public void onPrivateMessage(PrivateMessageEvent<PircBotX> event) throws Exception
-	{
-		AdventurIRC.mainFrame.getUserPanel(event.getUser()).write(event.getUser().getNick(), event.getMessage());
-	}
-}
-class Connection implements Runnable
+class Connection extends Thread
 {
 	PircBotX bot;
-	
+
 	public Connection(PircBotX bot)
 	{
 		this.bot = bot;
 	}
 
+	@Override
 	public void run()
 	{
 		try
@@ -112,11 +54,13 @@ class Connection implements Runnable
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace();
+			e.printStackTrace(FileManager.logWriter);
+			FileManager.logWriter.flush();
 		}
 		catch (IrcException e)
 		{
-			e.printStackTrace();
+			e.printStackTrace(FileManager.logWriter);
+			FileManager.logWriter.flush();
 		}
 	}
 }

@@ -66,9 +66,13 @@ public class Bootstrap extends JFrame
 		}
 		catch (MalformedURLException e)
 		{
+			e.printStackTrace(FileManager.logWriter);
+			FileManager.logWriter.flush();
 		}
 		catch (IOException e)
 		{
+			e.printStackTrace(FileManager.logWriter);
+			FileManager.logWriter.flush();
 		}
 		return AdventurIRC.VERSION;
 	}
@@ -92,9 +96,13 @@ public class Bootstrap extends JFrame
 		}
 		catch (MalformedURLException e)
 		{
+			e.printStackTrace(FileManager.logWriter);
+			FileManager.logWriter.flush();
 		}
 		catch (IOException e)
 		{
+			e.printStackTrace(FileManager.logWriter);
+			FileManager.logWriter.flush();
 		}
 		return false;
 	}
@@ -160,15 +168,23 @@ class UpdateFinishedNotification extends JFrame
 		}
 		catch ( UnsupportedLookAndFeelException e )
 		{
+			e.printStackTrace(FileManager.logWriter);
+			FileManager.logWriter.flush();
 		}
 		catch (ClassNotFoundException e)
 		{
+			e.printStackTrace(FileManager.logWriter);
+			FileManager.logWriter.flush();
 		}
 		catch (InstantiationException e)
 		{
+			e.printStackTrace(FileManager.logWriter);
+			FileManager.logWriter.flush();
 		}
 		catch (IllegalAccessException e)
 		{
+			e.printStackTrace(FileManager.logWriter);
+			FileManager.logWriter.flush();
 		}
 		
 		JLabel label = new JLabel("<html> Es wurde erfolgreich ein Update durchgeführt ! Starte nun "+path+" um von den Änderungen zu profitieren !");

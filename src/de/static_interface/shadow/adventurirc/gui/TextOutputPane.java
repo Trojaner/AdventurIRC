@@ -1,12 +1,17 @@
 package de.static_interface.shadow.adventurirc.gui;
 
 import java.awt.Color;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
+import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
+
+import de.static_interface.shadow.adventurirc.gui.panel.ChatPanel;
 import static org.pircbotx.Colors.BLUE;
 import static org.pircbotx.Colors.BROWN;
 import static org.pircbotx.Colors.CYAN;
@@ -25,23 +30,51 @@ import static org.pircbotx.Colors.YELLOW;
 import static org.pircbotx.Colors.removeFormatting;
 import static org.pircbotx.Colors.BLACK;
 
-public class TextOutput extends JTextPane
+public class TextOutputPane extends JScrollPane
 {
 	private static final long serialVersionUID = 1L;
+
+	private TextOutput textOutput = new TextOutput();
+
+	public TextOutputPane()
+	{
+		super();
+		setViewportView(textOutput);
+	}
+
+	public void write(String text)
+	{
+		textOutput.write(text);
+	}
 	
+}
+class TextOutput extends JTextPane
+{
+	private static final long serialVersionUID = 1L;
+
 	private static final String colorCodeStart = String.valueOf((char) 3);
-	
+
+	private static final SimpleDateFormat timeFormat = ChatPanel.defaultTimeFormat_Chat;
+
 	public TextOutput()
 	{
 		super();
 		setEditable(false);
 		ColorUtils.registerStyles(getStyledDocument());
 	}
-	
+
 	public void write(String text)
 	{
 		String[] splitByColorCode = removeFormatting(text).trim().split(String.valueOf((char) 3));
 		Style style;
+
+		try
+		{
+			getStyledDocument().insertString(getStyledDocument().getLength(), timeFormat.format(new Date()), ColorUtils.getStyle(BLACK, getStyledDocument()));
+		}
+		catch (BadLocationException e)
+		{
+		}
 		for ( String s : splitByColorCode )
 		{
 			if ( s.startsWith("[") )
@@ -56,7 +89,7 @@ public class TextOutput extends JTextPane
 				}
 				continue;
 			}
-			
+
 			if ( Character.isDigit(s.charAt(0)) && Character.isDigit(s.charAt(1)) )
 			{
 				style = ColorUtils.getStyle(colorCodeStart+s.substring(0, 2), getStyledDocument());
@@ -66,7 +99,7 @@ public class TextOutput extends JTextPane
 			{
 				style = ColorUtils.getStyle(BLACK, getStyledDocument());
 			}
-			
+
 			try
 			{
 				getStyledDocument().insertString(getStyledDocument().getLength(), s, style);
@@ -104,20 +137,20 @@ class ColorUtils
 		registerStyle(document, RED);
 		registerStyle(document, WHITE);
 		registerStyle(document, YELLOW);
-		
+
 		return document;
 	}
-	
+
 	public static Style getStyle(String color, StyledDocument document)
 	{
 		return document.getStyle(color);
 	}
-	
+
 	private static void registerStyle(StyledDocument document, String color)
 	{
 		StyleConstants.setForeground(document.addStyle(color, null), getColor(color));
 	}
-	
+
 	public static Color getColor(String color)
 	{
 		if ( color.equals(BLUE) ) return Color.BLUE;
