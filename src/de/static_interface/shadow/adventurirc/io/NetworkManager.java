@@ -5,6 +5,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Locale;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+
 import org.pircbotx.Channel;
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
@@ -170,13 +176,56 @@ class Listener extends ListenerAdapter<PircBotX>
 	public void onMessage(MessageEvent<PircBotX> event) throws Exception
 	{
 		AdventurIRC.frame.getPublicChatPanel(hostname, event.getChannel().getName()).write(event.getUser().getNick(), event.getMessage());
+		if ( event.getMessage().contains(AdventurIRC.nickname) )
+		{
+			NotificationPlayer.play();
+		}
 	}
 
 	@Override
 	public void onPrivateMessage(PrivateMessageEvent<PircBotX> event) throws Exception
 	{
 		if ( AdventurIRC.frame.getPrivateChatPanel(hostname, event.getUser().getNick()) == null ) AdventurIRC.frame.addPrivateChatPanel(hostname, event.getUser().getNick(), new PrivateChatPanel(hostname, event.getUser()));
-
 		AdventurIRC.frame.getPrivateChatPanel(hostname, event.getUser().getNick()).write(event.getUser().getNick(), event.getMessage());
+		NotificationPlayer.play();
+	}
+}
+class NotificationPlayer extends Thread
+{
+	public static final void play()
+	{
+		Thread thread = new Thread(new NotificationPlayer());
+		thread.start();
+	}
+
+	Clip clip;
+
+	public NotificationPlayer()
+	{
+		try
+		{
+			clip = AudioSystem.getClip();
+			AudioInputStream in = AudioSystem.getAudioInputStream(AdventurIRC.class.getResourceAsStream("/de/static_interface/shadow/adventurirc/Randomize.wav"));
+			clip.open(in);
+		}
+		catch (UnsupportedAudioFileException e)
+		{
+			e.printStackTrace(FileManager.logWriter);
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace(FileManager.logWriter);
+		}
+		catch (LineUnavailableException e)
+		{
+			e.printStackTrace(FileManager.logWriter);
+		}
+	}
+
+	@Override
+	public void run()
+	{
+		clip.start();
+		clip.stop();
 	}
 }
