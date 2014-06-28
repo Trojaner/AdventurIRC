@@ -53,7 +53,7 @@ public class Bootstrap extends JFrame
 			return;
 		}
 	}
-	
+
 	private static String getRemoteVersion()
 	{
 		try
@@ -113,16 +113,16 @@ public class Bootstrap extends JFrame
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 302, 150);
 		getContentPane().setLayout(null);
-		
+
 		JLabel lblTrageHierEinfach = new JLabel("Trage hier einfach deinen Nicknamen ein:");
 		lblTrageHierEinfach.setBounds(10, 12, 281, 15);
 		getContentPane().add(lblTrageHierEinfach);
-		
+
 		textField = new JTextField();
 		textField.setBounds(10, 42, 280, 25);
 		getContentPane().add(textField);
 		textField.setColumns(10);
-		
+
 		JButton btnLosGehts = new JButton("und los geht's !");
 		btnLosGehts.addActionListener(new ActionListener()
 		{
@@ -143,7 +143,7 @@ public class Bootstrap extends JFrame
 class UpdateFinishedNotification extends JFrame
 {
 	private static final long serialVersionUID = 1L;
-	
+
 	public UpdateFinishedNotification(String path)
 	{
 		addWindowListener(new WindowAdapter()
@@ -154,7 +154,7 @@ class UpdateFinishedNotification extends JFrame
 				System.exit(0);
 			}
 		});
-		
+
 		try
 		{
 			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels())
@@ -186,7 +186,7 @@ class UpdateFinishedNotification extends JFrame
 			e.printStackTrace(FileManager.logWriter);
 			FileManager.logWriter.flush();
 		}
-		
+
 		JLabel label = new JLabel("<html> Es wurde erfolgreich ein Update durchgeführt ! Starte nun "+path+" um von den Änderungen zu profitieren !");
 		setAlwaysOnTop(true);
 		setSize(640, 150);

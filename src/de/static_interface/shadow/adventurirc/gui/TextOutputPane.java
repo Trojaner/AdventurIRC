@@ -70,7 +70,7 @@ class TextOutput extends JTextPane
 
 		try
 		{
-			getStyledDocument().insertString(getStyledDocument().getLength(), timeFormat.format(new Date()), ColorUtils.getStyle(BLACK, getStyledDocument()));
+			getStyledDocument().insertString(getStyledDocument().getLength(), timeFormat.format(new Date()).concat(" "), ColorUtils.getStyle(BLACK, getStyledDocument()));
 		}
 		catch (BadLocationException e)
 		{

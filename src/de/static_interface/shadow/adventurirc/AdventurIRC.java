@@ -2,6 +2,7 @@ package de.static_interface.shadow.adventurirc;
 
 import de.static_interface.shadow.adventurirc.gui.IRCFrame;
 import de.static_interface.shadow.adventurirc.io.FileManager;
+import de.static_interface.shadow.adventurirc.io.NetworkManager;
 
 public class AdventurIRC implements Runnable
 {
@@ -13,6 +14,7 @@ public class AdventurIRC implements Runnable
 
 	public void run()
 	{
-		new IRCFrame();
+		NetworkManager.connectToServer("irc.adventuria.eu", 6667, FileManager.getString(FileManager.CFG_NICKNAME));
+		NetworkManager.joinChannel("irc.adventuria.eu", "#advTest");
 	}
 }
