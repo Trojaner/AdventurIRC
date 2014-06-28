@@ -1,8 +1,6 @@
 package de.static_interface.shadow.adventurirc.gui;
 
 import java.awt.Color;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
@@ -11,7 +9,6 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
-import de.static_interface.shadow.adventurirc.gui.panel.ChatPanel;
 import static org.pircbotx.Colors.BLUE;
 import static org.pircbotx.Colors.BROWN;
 import static org.pircbotx.Colors.CYAN;
@@ -54,8 +51,6 @@ class TextOutput extends JTextPane
 
 	private static final String colorCodeStart = String.valueOf((char) 3);
 
-	private static final SimpleDateFormat timeFormat = ChatPanel.defaultTimeFormat_Chat;
-
 	public TextOutput()
 	{
 		super();
@@ -68,13 +63,6 @@ class TextOutput extends JTextPane
 		String[] splitByColorCode = removeFormatting(text).trim().split(String.valueOf((char) 3));
 		Style style;
 
-		try
-		{
-			getStyledDocument().insertString(getStyledDocument().getLength(), timeFormat.format(new Date()).concat(" "), ColorUtils.getStyle(BLACK, getStyledDocument()));
-		}
-		catch (BadLocationException e)
-		{
-		}
 		for ( String s : splitByColorCode )
 		{
 			if ( s.startsWith("[") )

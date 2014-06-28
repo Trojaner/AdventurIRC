@@ -1,6 +1,7 @@
 package de.static_interface.shadow.adventurirc.gui.panel;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -12,7 +13,7 @@ public abstract class ChatPanel extends JPanel
 {
 	private static final long serialVersionUID = 1L;
 
-	public static final String PREFIX = "[AdventurIRC] ";
+	public static final String PREFIX = "[AdventurIRC]";
 
 	public static final SimpleDateFormat defaultTimeFormat_Chat = new SimpleDateFormat("HH:mm:ss");
 	public static final SimpleDateFormat defaultTimeFormat_Log = new SimpleDateFormat("dd.MM.YYYY");
@@ -33,13 +34,17 @@ public abstract class ChatPanel extends JPanel
 	}
 
 	/**
-	 * Writes text to the TextOutput
-	 * @param text Text to write
+	 * Writes text to the output, format: prefix+": "+text
+	 * @param prefix String before ": "
+	 * @param text String after ": "
 	 */
-	public void  write(String text)
+	public void  write(String prefix, String text)
 	{
-		textOutput.write(text);
+		log(String.format(FileManager.getString(FileManager.CFG_CHAT_OUTPUT_FORMAT), timeFormat_Chat.format(new Date()), prefix, text));
+		textOutput.write(String.format(FileManager.getString(FileManager.CFG_CHAT_OUTPUT_FORMAT), timeFormat_Chat.format(new Date()), prefix, text));
 	}
+
+	public abstract void log(String toWrite);
 
 	/**
 	 * Resizes the contained components to match the new frame size

@@ -1,26 +1,20 @@
 package de.static_interface.shadow.adventurirc.io;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Random;
-
-import de.static_interface.shadow.tameru.Configuration;
 
 public class FileManager
 {
 	private static final AdventurIRCConfiguration programConfiguration = new AdventurIRCConfiguration();
 
-	public static final AdventurIRCLogWriter logWriter = AdventurIRCLogWriter.createLogWriter();
+	public static final AdventurIRCErrorLogWriter logWriter = AdventurIRCErrorLogWriter.createLogWriter();
 
 	public static final String
 		CFG_NICKNAME = "nickname",
 		CFG_DOBEEP = "beep",
 		CFG_TIME_FORMAT_LOG = "time_format_log",
-		CFG_TIME_FORMAT_CHAT = "time_format_chat";
+		CFG_TIME_FORMAT_CHAT = "time_format_chat",
+		CFG_CHAT_OUTPUT_FORMAT = "chat_output_format",
+		CFG_LOG_CHAT_OUTPUT = "log_chat_output";
 
 	public static String getString(String key)
 	{
@@ -29,7 +23,7 @@ public class FileManager
 		{
 			if ( key.equals(CFG_NICKNAME) )
 			{
-				String name = "AdventuriaJin"+(new Random()).nextInt();
+				String name = "AdventuriaJin"+(new Random()).nextInt(5);
 				setString(key, name);
 				return name;
 			}
@@ -40,15 +34,27 @@ public class FileManager
 			}
 			if ( key.equals(CFG_TIME_FORMAT_CHAT) )
 			{
-				setString("CFG_TIME_FORMAT_COMMENT", "(For chat output) For possible format symbols see http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html");
-				setString(key, "<HH:mm:ss> ");
-				return "<HH:mm:ss>";
+				setString(CFG_TIME_FORMAT_CHAT+"_comment", "(For chat output) For possible format symbols see http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html");
+				setString(key, "HH:mm:ss");
+				return "HH:mm:ss";
 			}
 			if ( key.equals(CFG_TIME_FORMAT_LOG) )
 			{
-				setString("CFG_TIME_FORMAT_LOG", "(For log files) For possible format symbols see http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html");
-				setString(key, "<dd.MM.YYYY>");
-				return "<dd.MM.YYYY>";
+				setString(CFG_TIME_FORMAT_LOG+"_comment", "(For log files) For possible format symbols see http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html");
+				setString(key, "dd.MM.YYYY");
+				return "DD.MM.YYYY";
+			}
+			if ( key.equals(CFG_CHAT_OUTPUT_FORMAT) )
+			{
+				setString(CFG_CHAT_OUTPUT_FORMAT+"_comment", "This formats the chat output in the client. Default is [%s] %s: %s, while first %s is the time, the second is the name and the third one is the chat message.");
+				setString(key, "[%s] %s: %s");
+				return "[%s] %s: %s";
+			}
+			if ( key.equals(CFG_LOG_CHAT_OUTPUT) )
+			{
+				setString(CFG_LOG_CHAT_OUTPUT+"_comment", "This logs the chat into files. The path will be in .AdventurIRC/logs/<servername>/<channelname>.txt");
+				setString(key, "true");
+				return "true";
 			}
 		}
 		
@@ -60,48 +66,5 @@ public class FileManager
 		programConfiguration.deleteString(key);
 		programConfiguration.putString(key, value);
 		programConfiguration.save();
-	}
-}
-class AdventurIRCConfiguration extends Configuration
-{
-	protected static final Path oldWindowsPath = Paths.get(System.getProperty("user.home")+File.separator+"AdventurIRC");
-	protected static final Path path = Paths.get(System.getProperty("user.home")+File.separator+".AdventurIRC");
-
-	private static Path getAbsoluteHomePath()
-	{
-		final boolean isMSWindows = System.getProperty("os.name").toLowerCase().contains("windows");
-		
-		if ( Files.exists(oldWindowsPath) )
-		{
-			try
-			{
-				Files.move(oldWindowsPath, path, StandardCopyOption.REPLACE_EXISTING);
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace(FileManager.logWriter);
-				FileManager.logWriter.flush();
-			}
-		}
-		
-		if ( !Files.exists(path) )
-		{
-			try
-			{
-				Files.createDirectories(path);
-				if ( isMSWindows ) Files.setAttribute(path, "dos:hidden", true);
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace(FileManager.logWriter);
-				FileManager.logWriter.flush();
-			}
-		}
-		return Paths.get(path.toAbsolutePath().toString()+File.separator+"config");
-	}
-
-	public AdventurIRCConfiguration()
-	{
-		super(getAbsoluteHomePath());
 	}
 }

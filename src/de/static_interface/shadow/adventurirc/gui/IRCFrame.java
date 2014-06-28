@@ -97,7 +97,7 @@ public class IRCFrame extends JFrame
 			}
 		});
 		setVisible(true);
-		HomePanel.write(ChatPanel.PREFIX.concat("Verbinde zu irc.adventuria.eu ..."));
+		HomePanel.write(ChatPanel.PREFIX, "Verbinde zu irc.adventuria.eu ...");
 	}
 
 	private void addContent(String title, ChatPanel p)

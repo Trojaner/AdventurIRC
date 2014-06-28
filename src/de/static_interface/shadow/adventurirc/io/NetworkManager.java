@@ -2,7 +2,6 @@ package de.static_interface.shadow.adventurirc.io;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -28,7 +27,7 @@ public class NetworkManager
 	{
 		Listener listener = new Listener(hostname);
 
-		AdventurIRC.frame.HomePanel.write("Verbinde zu "+hostname);
+		AdventurIRC.frame.HomePanel.write(ChatPanel.PREFIX, "Verbinde zu "+hostname);
 
 		Configuration<PircBotX> cfg = new Configuration.Builder<PircBotX>()
 									.setName(username)
@@ -83,6 +82,11 @@ public class NetworkManager
 	public static void quitServer(String hostname)
 	{
 		quitServer(hostname, AdventurIRC.VERSION);
+	}
+
+	public static void rename(String hostname, String newNickname)
+	{
+		servers.get(hostname).sendIRC().changeNick(newNickname);
 	}
 
 	public static void quitServer(String hostname, String reason)
@@ -147,14 +151,12 @@ class Listener extends ListenerAdapter<PircBotX>
 	@Override
 	public void onMessage(MessageEvent<PircBotX> event) throws Exception
 	{
-		//<Time> <User>:<Message>
-		AdventurIRC.frame.getPublicChatPanel(hostname, event.getChannel().getName()).write(ChatPanel.timeFormat_Chat.format(new Date())+" "+event.getUser()+" "+event.getMessage());
+		AdventurIRC.frame.getPublicChatPanel(hostname, event.getChannel().getName()).write(event.getUser().getNick(), event.getMessage());
 	}
 
 	@Override
 	public void onPrivateMessage(PrivateMessageEvent<PircBotX> event) throws Exception
 	{
-		//<Time> <User>:<Message>
-		AdventurIRC.frame.getPrivateChatPanel(hostname, event.getUser().getNick()).write(ChatPanel.timeFormat_Chat.format(new Date())+" "+event.getUser()+" "+event.getMessage());
+		AdventurIRC.frame.getPrivateChatPanel(hostname, event.getUser().getNick()).write(event.getUser().getNick(), event.getMessage());
 	}
 }

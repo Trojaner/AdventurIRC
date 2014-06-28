@@ -3,6 +3,7 @@ package de.static_interface.shadow.adventurirc.gui.panel;
 import org.pircbotx.User;
 
 import de.static_interface.shadow.adventurirc.AdventurIRC;
+import de.static_interface.shadow.adventurirc.io.AdventurIRCLog;
 
 public class PrivateChatPanel extends NetworkedChatPanel
 {
@@ -14,6 +15,7 @@ public class PrivateChatPanel extends NetworkedChatPanel
 	{
 		super(servername);
 		this.user = user;
+		log = ( logChat ? new AdventurIRCLog(servername, user.getNick()) : null );
 	}
 
 	@Override
@@ -26,6 +28,12 @@ public class PrivateChatPanel extends NetworkedChatPanel
 		textInput.setBounds(5, (int) (textOutput.getBounds().getHeight()+10), x_max - 10, ((int) (y_max - textOutput.getBounds().getHeight()) < 27 ? 27 : (int) (y_max - textOutput.getBounds().getHeight())));
 	}
 
+	@Override
+	public void log(String toLog)
+	{
+		if ( logChat ) log.write(toLog);
+	}
+
 	public User getUser()
 	{
 		return user;
@@ -34,7 +42,7 @@ public class PrivateChatPanel extends NetworkedChatPanel
 	@Override
 	public void send(String text)
 	{
-		write(AdventurIRC.nickname+" "+text);
+		write(AdventurIRC.nickname, text);
 		user.send().message(text);
 	}
 }

@@ -1,8 +1,13 @@
 package de.static_interface.shadow.adventurirc.gui.panel;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Arrays;
 
 import de.static_interface.shadow.adventurirc.AdventurIRC;
+import de.static_interface.shadow.adventurirc.io.AdventurIRCLog;
+import de.static_interface.shadow.adventurirc.io.FileManager;
+import de.static_interface.shadow.adventurirc.io.NetworkManager;
 
 public abstract class NetworkedChatPanel extends ChatPanel
 {
@@ -10,10 +15,28 @@ public abstract class NetworkedChatPanel extends ChatPanel
 
 	private String servername;
 
+	protected static final boolean logChat = FileManager.getString(FileManager.CFG_LOG_CHAT_OUTPUT).equalsIgnoreCase("true");
+
+	protected AdventurIRCLog log;
+
 	public NetworkedChatPanel(String servername)
 	{
 		this.servername = servername;
+		textInput.addActionListener(
+		new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				System.out.println("Action performed !");
+				if ( checkCommand(textInput.getText()) ) { textInput.setText(""); return; }
+
+				send(textInput.getText());
+			}
+		});
 	}
+
+	public abstract void log(String toLog);
 
 	public String getServername()
 	{
@@ -23,13 +46,13 @@ public abstract class NetworkedChatPanel extends ChatPanel
 	public abstract void send(String text);
 
 	@Override
-	public void write(String text)
+	public void write(String prefix, String text)
 	{
 		if ( checkCommand(text) ) return;
-		else super.write(text);
+		else super.write(prefix, text);
 	}
 
-	private boolean checkCommand(String text)
+	protected boolean checkCommand(String text)
 	{
 		if ( !text.startsWith("/") ) return false;
 		if ( text.startsWith("//") ) { send(text); return true; }
@@ -41,7 +64,7 @@ public abstract class NetworkedChatPanel extends ChatPanel
 		{
 			if ( args.length < 1 )
 			{
-				write(PREFIX+"Du musst einen Channelnamen angeben !");
+				write(PREFIX, "Du musst einen Channelnamen angeben !");
 				return true;
 			}
 
@@ -52,11 +75,11 @@ public abstract class NetworkedChatPanel extends ChatPanel
 		{
 			if ( args.length < 1 )
 			{
-				if ( !(this instanceof PublicChatPanel) ) { write(PREFIX+"Das hier ist kein IRC-Channel"); return true; }
-				else { /* part channel */ return true; }
+				write(PREFIX, "Das hier ist kein IRC-Channel");
+				return true;
 			}
 
-			//Part another channel
+			NetworkManager.partChannel(servername, AdventurIRC.frame.getPublicChatPanel(servername, args[0]).getChannel());
 			return true;
 		}
 		if ( cmd.equalsIgnoreCase("close") )
@@ -68,17 +91,17 @@ public abstract class NetworkedChatPanel extends ChatPanel
 		{
 			if ( args.length < 1 )
 			{
-				write(PREFIX+"Du musst einen neuen Nicknamen angeben.");
+				write(PREFIX, "Du musst einen neuen Nicknamen angeben.");
 				return true;
 			}
 			
 			AdventurIRC.nickname = args[0];
-			//Rename in NetworkManager
+			NetworkManager.rename(servername, AdventurIRC.nickname);
 			return true;
 		}
 		else
 		{
-			write("Diesen Befehl gibt es nicht !");
+			write(PREFIX, "Diesen Befehl gibt es nicht !");
 			return false;
 		}
 	}
