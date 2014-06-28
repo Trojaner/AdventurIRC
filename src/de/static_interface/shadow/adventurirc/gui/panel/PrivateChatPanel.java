@@ -19,13 +19,20 @@ public class PrivateChatPanel extends NetworkedChatPanel
 	}
 
 	@Override
+	public void setBounds(int x, int y, int width, int height)
+	{
+		super.setBounds(x, y, width, height);
+		resizeComponents();
+	}
+
+	@Override
 	public void resizeComponents()
 	{
 		int y_max = (int) (getSize().getHeight());
 		int x_max = (int) (getSize().getWidth());
 
-		textOutput.setBounds(5, 5, x_max - 10 ,(int) (y_max*0.7));
-		textInput.setBounds(5, (int) (textOutput.getBounds().getHeight()+10), x_max - 10, ((int) (y_max - textOutput.getBounds().getHeight()) < 27 ? 27 : (int) (y_max - textOutput.getBounds().getHeight())));
+		textOutput.setBounds(5, 5, x_max-10, (int) (y_max*0.8));
+		textInput.setBounds(5, textOutput.getHeight()+5, textOutput.getWidth(), (y_max - (textOutput.getHeight()+10)));
 	}
 
 	@Override

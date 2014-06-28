@@ -16,6 +16,7 @@ import de.static_interface.shadow.adventurirc.gui.panel.ChatPanel;
 import de.static_interface.shadow.adventurirc.gui.panel.HomePanel;
 import de.static_interface.shadow.adventurirc.gui.panel.PrivateChatPanel;
 import de.static_interface.shadow.adventurirc.gui.panel.PublicChatPanel;
+import de.static_interface.shadow.adventurirc.gui.panel.ServerPanel;
 import de.static_interface.shadow.adventurirc.io.NetworkManager;
 
 public class IRCFrame extends JFrame
@@ -27,6 +28,9 @@ public class IRCFrame extends JFrame
 	
 	//String = server_ip.channelname
 	private static final HashMap<String, PublicChatPanel> publicchatpanels = new HashMap<String, PublicChatPanel>();
+
+	//String = server_ip
+	private static final HashMap<String, ServerPanel> serverpanels = new HashMap<String, ServerPanel>();
 
 	public final HomePanel HomePanel = new HomePanel();
 
@@ -97,7 +101,6 @@ public class IRCFrame extends JFrame
 			}
 		});
 		setVisible(true);
-		HomePanel.write(ChatPanel.PREFIX, "Verbinde zu irc.adventuria.eu ...");
 	}
 
 	private void addContent(String title, ChatPanel p)
@@ -108,6 +111,17 @@ public class IRCFrame extends JFrame
 	private void removeContent(ChatPanel p)
 	{
 		tabbedContents.remove(p);
+	}
+
+	public void addServerPanel(String server)
+	{
+		serverpanels.put(server, new ServerPanel(server));
+		addContent(server, serverpanels.get(server));
+	}
+
+	public ServerPanel getServerPanel(String server)
+	{
+		return serverpanels.get(server);
 	}
 
 	public PrivateChatPanel getPrivateChatPanel(String server, String username)

@@ -40,12 +40,12 @@ public class AdventurIRCLog
 		if ( writer == null ) try
 		{
 			writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8);
-			new Thread(new WriterThread(toWrite, writer)).start();
 		}
 		catch (IOException e)
 		{
 			e.printStackTrace(FileManager.logWriter);
 		}
+		new Thread(new WriterThread(toWrite, writer)).start();
 	}
 }
 class WriterThread extends Thread
@@ -66,6 +66,7 @@ class WriterThread extends Thread
 		{
 			writer.write(toWrite.concat("\n"));
 			writer.flush();
+			return;
 		}
 		catch (IOException e)
 		{

@@ -1,6 +1,7 @@
 package de.static_interface.shadow.adventurirc.gui.panel;
 
 import org.pircbotx.Channel;
+import org.pircbotx.User;
 
 import de.static_interface.shadow.adventurirc.AdventurIRC;
 import de.static_interface.shadow.adventurirc.gui.TextOutputPane;
@@ -45,27 +46,8 @@ public class PublicChatPanel extends NetworkedChatPanel
 		int x_max = (int) (getSize().getWidth());
 
 		textOutput.setBounds(5, 5, (int) (x_max*0.7), (int) (y_max*0.8));
-		textInput.setBounds(5, (int) (textOutput.getBounds().getHeight()+5), (int) (x_max*0.7), (int) (y_max*0.14));
-		userList.setBounds(textOutput.getWidth()+5, 5, (int) (x_max*0.29), ((textOutput.getHeight()+textInput.getHeight())));
-		if ( textInput.getHeight() < 26 )
-		{
-			textOutput.setBounds(5, 5, (int) (x_max*0.7), (int) (y_max*0.6));
-			textInput.setBounds(5, (int) (textOutput.getBounds().getHeight()+5), (int) (x_max*0.7), 27);
-			userList.setBounds(textOutput.getWidth()+5, 5, (int) (x_max*0.29), ((textOutput.getHeight()+textInput.getHeight())));
-		}
-
-		if ( textInput.getHeight() > 39 )
-		{
-			textOutput.setBounds(5, 5, (int) (x_max*0.7), (int) (y_max*0.923));
-			textInput.setBounds(5, (int) (textOutput.getBounds().getHeight()+5), (int) (x_max*0.7), (int) (y_max*0.07));
-			userList.setBounds(textOutput.getWidth()+5, 5, (int) (x_max*0.29), ((textOutput.getHeight()+textInput.getHeight())));
-			if ( textInput.getHeight() > 39 )
-			{
-				textOutput.setBounds(5, 5, (int) (x_max*0.7), (int) (y_max*0.943));
-				textInput.setBounds(5, (int) (textOutput.getBounds().getHeight()+5), (int) (x_max*0.7), (int) (y_max*0.035));
-				userList.setBounds(textOutput.getWidth()+5, 5, (int) (x_max*0.29), ((textOutput.getHeight()+textInput.getHeight())));
-			}
-		}
+		textInput.setBounds(5, textOutput.getHeight()+5, textOutput.getWidth(), (y_max - (textOutput.getHeight()+10)));
+		userList.setBounds(textOutput.getWidth()+5, 5, (int) (x_max*0.29)-5, ((textOutput.getHeight()+textInput.getHeight())));
 	}
 
 	@Override
@@ -73,6 +55,22 @@ public class PublicChatPanel extends NetworkedChatPanel
 	{
 		write(AdventurIRC.nickname, text);
 		channel.send().message(text);
+	}
+
+	public void refreshUserList(boolean userParted)
+	{
+		try
+		{
+			Thread.sleep(500);
+		}
+		catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}
+		for ( User u : channel.getUsers() )
+		{
+			userList.write(u.getNick());
+		}
 	}
 
 	@Override

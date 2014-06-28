@@ -8,51 +8,35 @@ import de.static_interface.shadow.adventurirc.AdventurIRC;
 import de.static_interface.shadow.adventurirc.io.AdventurIRCLog;
 import de.static_interface.shadow.adventurirc.io.NetworkManager;
 
-public abstract class NetworkedChatPanel extends ChatPanel
+public class ServerPanel extends HomePanel
 {
 	private static final long serialVersionUID = 1L;
 
 	private String servername;
 
-	protected AdventurIRCLog log;
+	private AdventurIRCLog log;
 
-	public NetworkedChatPanel(String servername)
+	public ServerPanel(String servername)
 	{
 		this.servername = servername;
+		log = ( logChat ? new AdventurIRCLog(servername, "main") : null );
 		textInput.addActionListener(
 		new ActionListener()
 		{
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				if ( checkCommand(textInput.getText()) ) { textInput.setText(""); return; }
-
-				send(textInput.getText());
+				if ( !checkCommand(textInput.getText()) ) { write(PREFIX, "Hier sind nur Commands möglich !"); return; }
 				textInput.setText("");
 			}
 		});
-	}
-
-	public abstract void log(String toLog);
-
-	public String getServername()
-	{
-		return servername;
-	}
-
-	public abstract void send(String text);
-
-	@Override
-	public void write(String prefix, String text)
-	{
-		if ( checkCommand(text) ) return;
-		else super.write(prefix, text);
+		resizeComponents();
 	}
 
 	protected boolean checkCommand(String text)
 	{
 		if ( !text.startsWith("/") ) return false;
-		if ( text.startsWith("//") ) { send(text); return true; }
+		if ( text.startsWith("//") ) return (checkCommand(text.substring(1)));
 
 		String cmd = text.substring(1).split(" ")[0];
 		String[] args = Arrays.copyOfRange(text.split(" "), 1, text.split(" ").length);
@@ -104,5 +88,11 @@ public abstract class NetworkedChatPanel extends ChatPanel
 			write(PREFIX, "Diesen Befehl gibt es nicht !");
 			return false;
 		}
+	}
+
+	@Override
+	public void log(String toLog)
+	{
+		if ( logChat ) log.write(toLog);
 	}
 }

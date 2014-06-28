@@ -21,6 +21,8 @@ public abstract class ChatPanel extends JPanel
 	public static SimpleDateFormat timeFormat_Chat = new SimpleDateFormat(FileManager.getString(FileManager.CFG_TIME_FORMAT_CHAT));
 	public static SimpleDateFormat timeFormat_Log = new SimpleDateFormat(FileManager.getString(FileManager.CFG_TIME_FORMAT_LOG));
 
+	protected static final boolean logChat = FileManager.getString(FileManager.CFG_LOG_CHAT_OUTPUT).equalsIgnoreCase("true");
+
 	protected TextOutputPane textOutput = new TextOutputPane();
 	
 	protected JTextField textInput = new JTextField();

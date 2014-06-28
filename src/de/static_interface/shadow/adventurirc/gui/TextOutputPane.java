@@ -31,7 +31,7 @@ public class TextOutputPane extends JScrollPane
 {
 	private static final long serialVersionUID = 1L;
 
-	private TextOutput textOutput = new TextOutput();
+	protected TextOutput textOutput = new TextOutput();
 
 	public TextOutputPane()
 	{
@@ -43,7 +43,16 @@ public class TextOutputPane extends JScrollPane
 	{
 		textOutput.write(text);
 	}
-	
+
+	public String getText()
+	{
+		return textOutput.getText();
+	}
+
+	public void clear()
+	{
+		textOutput.setText("");
+	}
 }
 class TextOutput extends JTextPane
 {

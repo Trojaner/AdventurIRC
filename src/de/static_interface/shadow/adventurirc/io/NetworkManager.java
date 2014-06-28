@@ -11,11 +11,14 @@ import org.pircbotx.PircBotX;
 import org.pircbotx.User;
 import org.pircbotx.exception.IrcException;
 import org.pircbotx.hooks.ListenerAdapter;
+import org.pircbotx.hooks.events.JoinEvent;
 import org.pircbotx.hooks.events.MessageEvent;
+import org.pircbotx.hooks.events.PartEvent;
 import org.pircbotx.hooks.events.PrivateMessageEvent;
 
 import de.static_interface.shadow.adventurirc.AdventurIRC;
 import de.static_interface.shadow.adventurirc.gui.panel.ChatPanel;
+import de.static_interface.shadow.adventurirc.gui.panel.PrivateChatPanel;
 import de.static_interface.shadow.adventurirc.gui.panel.PublicChatPanel;
 
 public class NetworkManager
@@ -27,7 +30,7 @@ public class NetworkManager
 	{
 		Listener listener = new Listener(hostname);
 
-		AdventurIRC.frame.HomePanel.write(ChatPanel.PREFIX, "Verbinde zu "+hostname);
+		AdventurIRC.frame.HomePanel.write(ChatPanel.PREFIX, "Verbinde zu "+hostname+" ...");
 
 		Configuration<PircBotX> cfg = new Configuration.Builder<PircBotX>()
 									.setName(username)
@@ -42,6 +45,9 @@ public class NetworkManager
 		PircBotX bot = new PircBotX(cfg);
 		new Thread(new Connection(bot)).start();
 		servers.put(hostname, bot);
+		while ( !bot.isConnected() );
+		AdventurIRC.frame.HomePanel.write(ChatPanel.PREFIX, "Du bist nun mit "+hostname+" verbunden.");
+		AdventurIRC.frame.addServerPanel(hostname);
 	}
 
 	public static void connectToServerWithPassword(String hostname, int port, String username, String password)
@@ -60,10 +66,8 @@ public class NetworkManager
 
 	public static void joinChannel(String hostname, String channel)
 	{
-		while ( !servers.get(hostname).isConnected() ) try { Thread.sleep(1500); } catch (InterruptedException e) { e.printStackTrace(FileManager.logWriter); }
-
+		while ( !servers.get(hostname).isConnected() );
 		servers.get(hostname).sendIRC().joinChannel(channel);
-
 		AdventurIRC.frame.addPublicChatPanel(hostname, channel, new PublicChatPanel(hostname, servers.get(hostname).getUserChannelDao().getChannel(channel)));
 	}
 
@@ -149,6 +153,20 @@ class Listener extends ListenerAdapter<PircBotX>
 	}
 
 	@Override
+	public void onJoin(JoinEvent<PircBotX> event) throws Exception
+	{
+		AdventurIRC.frame.getPublicChatPanel(event.getBot().getConfiguration().getServerHostname(), event.getChannel().getName()).refreshUserList(false);
+		AdventurIRC.frame.getPublicChatPanel(event.getBot().getConfiguration().getServerHostname(), event.getChannel().getName()).write(ChatPanel.PREFIX, event.getUser().getNick()+" ist dem Channel beigetreten !");
+	}
+
+	@Override
+	public void onPart(PartEvent<PircBotX> event) throws Exception
+	{
+		AdventurIRC.frame.getPublicChatPanel(event.getBot().getConfiguration().getServerHostname(), event.getChannel().getName()).refreshUserList(true);
+		AdventurIRC.frame.getPublicChatPanel(event.getBot().getConfiguration().getServerHostname(), event.getChannel().getName()).write(ChatPanel.PREFIX, event.getUser().getNick()+" hat den Channel verlassen !");
+	}
+
+	@Override
 	public void onMessage(MessageEvent<PircBotX> event) throws Exception
 	{
 		AdventurIRC.frame.getPublicChatPanel(hostname, event.getChannel().getName()).write(event.getUser().getNick(), event.getMessage());
@@ -157,6 +175,8 @@ class Listener extends ListenerAdapter<PircBotX>
 	@Override
 	public void onPrivateMessage(PrivateMessageEvent<PircBotX> event) throws Exception
 	{
+		if ( AdventurIRC.frame.getPrivateChatPanel(hostname, event.getUser().getNick()) == null ) AdventurIRC.frame.addPrivateChatPanel(hostname, event.getUser().getNick(), new PrivateChatPanel(hostname, event.getUser()));
+
 		AdventurIRC.frame.getPrivateChatPanel(hostname, event.getUser().getNick()).write(event.getUser().getNick(), event.getMessage());
 	}
 }

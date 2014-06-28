@@ -1,10 +1,27 @@
 package de.static_interface.shadow.adventurirc.gui.panel;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import de.static_interface.shadow.adventurirc.io.FileManager;
 
 public class HomePanel extends ChatPanel
 {
 	private static final long serialVersionUID = 1L;
+
+	public HomePanel()
+	{
+		textInput.addActionListener(
+		new ActionListener()
+		{
+			
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				textInput.setText("");
+			}
+		});
+	}
 
 	@Override
 	public void setBounds(int x, int y, int width, int height)
@@ -25,22 +42,17 @@ public class HomePanel extends ChatPanel
 		int x_max = (int) (getSize().getWidth());
 
 		textOutput.setBounds(5, 5, x_max-10, (int) (y_max*0.8));
-		textInput.setBounds(5, (int) (textOutput.getBounds().getHeight()+5), x_max-10, (int) (y_max*0.14));
-		if ( textInput.getHeight() < 26 )
+		textInput.setBounds(5, textOutput.getHeight()+5, textOutput.getWidth(), (y_max - (textOutput.getHeight()+10)));
+		
+		while ( textInput.getHeight() < 25 )
 		{
-			textOutput.setBounds(5, 5, x_max-10, (int) (y_max*0.6));
-			textInput.setBounds(5, (int) (textOutput.getBounds().getHeight()+5), x_max-10, 27);
+			textOutput.setBounds(5, 5, x_max-10, textOutput.getHeight()-5);
+			textInput.setBounds(5, textOutput.getHeight()+5, textOutput.getWidth(), (y_max - (textOutput.getHeight()+10)));
 		}
-
-		if ( textInput.getHeight() > 39 )
+		while ( textInput.getHeight() > 35 )
 		{
-			textOutput.setBounds(5, 5, x_max-10, (int) (y_max*0.923));
-			textInput.setBounds(5, (int) (textOutput.getBounds().getHeight()+5), x_max-10, (int) (y_max*0.07));
-			if ( textInput.getHeight() > 39 )
-			{
-				textOutput.setBounds(5, 5, x_max-10, (int) (y_max*0.943));
-				textInput.setBounds(5, (int) (textOutput.getBounds().getHeight()+5), x_max-10, (int) (y_max*0.035));
-			}
+			textOutput.setBounds(5, 5, x_max-10, textOutput.getHeight()+5);
+			textInput.setBounds(5, textOutput.getHeight()+5, textOutput.getWidth(), (y_max - (textOutput.getHeight()+10)));
 		}
 	}
 }
