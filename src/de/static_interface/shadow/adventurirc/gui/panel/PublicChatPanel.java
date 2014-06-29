@@ -7,7 +7,6 @@ import de.static_interface.shadow.adventurirc.AdventurIRC;
 import de.static_interface.shadow.adventurirc.gui.TextOutputPane;
 import de.static_interface.shadow.adventurirc.io.AdventurIRCLog;
 import de.static_interface.shadow.adventurirc.io.NetworkManager;
-import static org.pircbotx.Colors.DARK_GREEN;
 import static org.pircbotx.Colors.BLACK;
 import static org.pircbotx.Colors.BROWN;
 import static org.pircbotx.Colors.DARK_GRAY;
@@ -86,14 +85,9 @@ public class PublicChatPanel extends NetworkedChatPanel
 				userList.write(BROWN+"V " + (u.isVerified() ? BLACK : DARK_GRAY)+u.getNick());
 				continue;
 			}
-			else if ( u.getChannelsOpIn().contains(channel) || u.getChannelsOpIn().contains(channel) || u.getChannelsSuperOpIn().contains(channel) )
+			else if ( u.getChannelsOpIn().contains(channel) || u.getChannelsOwnerIn().contains(channel) )
 			{
 				userList.write(RED+"@ " + (u.isVerified() ? BLACK : DARK_GRAY)+u.getNick());
-				continue;
-			}
-			else if ( u.getChannelsOwnerIn().contains(channel) )
-			{
-				userList.write(DARK_GREEN+"A " + (u.isVerified() ? BLACK : DARK_GRAY)+u.getNick());
 				continue;
 			}
 		else userList.write(u.isVerified() ? BLACK : DARK_GRAY+u.getNick());
