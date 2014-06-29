@@ -7,6 +7,11 @@ import de.static_interface.shadow.adventurirc.AdventurIRC;
 import de.static_interface.shadow.adventurirc.gui.TextOutputPane;
 import de.static_interface.shadow.adventurirc.io.AdventurIRCLog;
 import de.static_interface.shadow.adventurirc.io.NetworkManager;
+import static org.pircbotx.Colors.DARK_GREEN;
+import static org.pircbotx.Colors.BLACK;
+import static org.pircbotx.Colors.BROWN;
+import static org.pircbotx.Colors.DARK_GRAY;
+import static org.pircbotx.Colors.RED;
 
 public class PublicChatPanel extends NetworkedChatPanel
 {
@@ -48,6 +53,12 @@ public class PublicChatPanel extends NetworkedChatPanel
 		textOutput.setBounds(5, 5, (int) (x_max*0.7), (int) (y_max*0.8));
 		textInput.setBounds(5, textOutput.getHeight()+5, textOutput.getWidth(), (y_max - (textOutput.getHeight()+10)));
 		userList.setBounds(textOutput.getWidth()+5, 5, (int) (x_max*0.29)-5, ((textOutput.getHeight()+textInput.getHeight())));
+
+		if ( textInput.getHeight() > 35 )
+		{
+			textInput.setBounds(5, y_max-40, (int) (x_max*0.7), 35);
+			textOutput.setBounds(5, 5, (int) (x_max*0.7), textInput.getY()-5);
+		}
 	}
 
 	@Override
@@ -57,7 +68,7 @@ public class PublicChatPanel extends NetworkedChatPanel
 		channel.send().message(text);
 	}
 
-	public void refreshUserList(boolean userParted)
+	public void refreshUserList(boolean onlyJoin)
 	{
 		try
 		{
@@ -67,15 +78,36 @@ public class PublicChatPanel extends NetworkedChatPanel
 		{
 			e.printStackTrace();
 		}
+
 		for ( User u : channel.getUsers() )
 		{
-			userList.write(u.getNick());
+			if ( u.getChannelsVoiceIn().contains(channel) )
+			{
+				userList.write(BROWN+"V " + (u.isVerified() ? BLACK : DARK_GRAY)+u.getNick());
+				continue;
+			}
+			else if ( u.getChannelsOpIn().contains(channel) || u.getChannelsOpIn().contains(channel) || u.getChannelsSuperOpIn().contains(channel) )
+			{
+				userList.write(RED+"@ " + (u.isVerified() ? BLACK : DARK_GRAY)+u.getNick());
+				continue;
+			}
+			else if ( u.getChannelsOwnerIn().contains(channel) )
+			{
+				userList.write(DARK_GREEN+"A " + (u.isVerified() ? BLACK : DARK_GRAY)+u.getNick());
+				continue;
+			}
+		else userList.write(u.isVerified() ? BLACK : DARK_GRAY+u.getNick());
 		}
 	}
 
 	@Override
 	protected boolean checkCommand(String text)
 	{
+		if ( text.startsWith("/nick") )
+		{
+			super.checkCommand(text);
+			refreshUserList(false);
+		}
 		if ( text.equalsIgnoreCase("/part") )
 		{
 			NetworkManager.partChannel(channel.getBot().getConfiguration().getServerHostname(), channel);

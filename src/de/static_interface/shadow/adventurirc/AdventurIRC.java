@@ -10,7 +10,7 @@ public class AdventurIRC implements Runnable
 
 	public static final IRCFrame frame = new IRCFrame();
 
-	public static final String VERSION = "AdventurIRC V1.0.2.3";
+	public static final String VERSION = "AdventurIRC V1.0.3.0";
 
 	public void run()
 	{

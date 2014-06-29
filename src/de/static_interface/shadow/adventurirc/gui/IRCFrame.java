@@ -8,6 +8,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.Vector;
 
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
@@ -122,6 +124,26 @@ public class IRCFrame extends JFrame
 	public ServerPanel getServerPanel(String server)
 	{
 		return serverpanels.get(server);
+	}
+
+	public Vector<PrivateChatPanel> getPrivateChatPanels(String server)
+	{
+		Vector<PrivateChatPanel> panels = new Vector<PrivateChatPanel>();
+		for ( Entry<String, PrivateChatPanel> p : privatechatpanels.entrySet() )
+		{
+			if ( p.getKey().equals(server) ) panels.add(p.getValue());
+		}
+		return panels;
+	}
+
+	public Vector<PublicChatPanel> getPublicChatPanels(String server)
+	{
+		Vector<PublicChatPanel> panels = new Vector<PublicChatPanel>();
+		for ( Entry<String, PublicChatPanel> p : publicchatpanels.entrySet() )
+		{
+			if ( p.getKey().equals(server) ) panels.add(p.getValue());
+		}
+		return panels;
 	}
 
 	public PrivateChatPanel getPrivateChatPanel(String server, String username)

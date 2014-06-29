@@ -42,6 +42,7 @@ public class TextOutputPane extends JScrollPane
 	public void write(String text)
 	{
 		textOutput.write(text);
+		textOutput.setCaretPosition(textOutput.getText().length());
 	}
 
 	public String getText()

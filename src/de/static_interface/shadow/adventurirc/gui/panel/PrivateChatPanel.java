@@ -26,6 +26,12 @@ public class PrivateChatPanel extends NetworkedChatPanel
 	}
 
 	@Override
+	public String toString()
+	{
+		return textInput.getText();
+	}
+
+	@Override
 	public void resizeComponents()
 	{
 		int y_max = (int) (getSize().getHeight());

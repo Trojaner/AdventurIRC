@@ -19,12 +19,14 @@ public abstract class NetworkedChatPanel extends ChatPanel
 	public NetworkedChatPanel(String servername)
 	{
 		this.servername = servername;
+		for ( ActionListener l : textInput.getActionListeners() ) textInput.removeActionListener(l);
 		textInput.addActionListener(
 		new ActionListener()
 		{
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
+				if ( textInput.getText().trim().equals("") ) return; 
 				if ( checkCommand(textInput.getText()) ) { textInput.setText(""); return; }
 
 				send(textInput.getText());
@@ -49,6 +51,7 @@ public abstract class NetworkedChatPanel extends ChatPanel
 		else super.write(prefix, text);
 	}
 
+	@Override
 	protected boolean checkCommand(String text)
 	{
 		if ( !text.startsWith("/") ) return false;
@@ -56,8 +59,6 @@ public abstract class NetworkedChatPanel extends ChatPanel
 
 		String cmd = text.substring(1).split(" ")[0];
 		String[] args = Arrays.copyOfRange(text.split(" "), 1, text.split(" ").length);
-
-		System.out.println(cmd);
 
 		if ( cmd.equalsIgnoreCase("join") )
 		{
@@ -99,10 +100,23 @@ public abstract class NetworkedChatPanel extends ChatPanel
 			NetworkManager.rename(servername, AdventurIRC.nickname);
 			return true;
 		}
+		if ( cmd.equalsIgnoreCase("msg") )
+		{
+			if ( args.length < 2 )
+			{
+				write(PREFIX, "Du musst einen Empfänger und eine Nachricht angeben.");
+				return true;
+			}
+
+			String msg = "";
+			for ( String s : Arrays.copyOfRange(args, 1, args.length) ) msg = msg + s + " ";
+			NetworkManager.sendPrivateMessage(this, servername, args[0], msg);
+			return true;
+		}
 		else
 		{
 			write(PREFIX, "Diesen Befehl gibt es nicht !");
-			return false;
 		}
+		return true;
 	}
 }

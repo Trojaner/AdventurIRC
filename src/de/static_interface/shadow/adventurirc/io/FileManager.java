@@ -14,7 +14,8 @@ public class FileManager
 		CFG_TIME_FORMAT_LOG = "time_format_log",
 		CFG_TIME_FORMAT_CHAT = "time_format_chat",
 		CFG_CHAT_OUTPUT_FORMAT = "chat_output_format",
-		CFG_LOG_CHAT_OUTPUT = "log_chat_output";
+		CFG_LOG_CHAT_OUTPUT = "log_chat_output",
+		CFG_DOWNLOAD_UPDATES = "update_download";
 
 	public static String getString(String key)
 	{
@@ -55,6 +56,12 @@ public class FileManager
 				setString(CFG_LOG_CHAT_OUTPUT+"_comment", "This logs the chat into files. The path will be in .AdventurIRC/logs/<servername>/<channelname>.txt");
 				setString(key, "true");
 				return "true";
+			}
+			if ( key.equals(CFG_DOWNLOAD_UPDATES) )
+			{
+				setString(CFG_DOWNLOAD_UPDATES+"_comment", "You can choose whether updates are downloaded instantly (YES), after prompt (PROMPT) or never (NO)");
+				setString(CFG_DOWNLOAD_UPDATES, "PROMPT");
+				return "PROMPT";
 			}
 		}
 		

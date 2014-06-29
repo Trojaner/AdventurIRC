@@ -1,27 +1,10 @@
 package de.static_interface.shadow.adventurirc.gui.panel;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import de.static_interface.shadow.adventurirc.io.FileManager;
 
 public class HomePanel extends ChatPanel
 {
 	private static final long serialVersionUID = 1L;
-
-	public HomePanel()
-	{
-		textInput.addActionListener(
-		new ActionListener()
-		{
-			
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				textInput.setText("");
-			}
-		});
-	}
 
 	@Override
 	public void setBounds(int x, int y, int width, int height)

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Vector;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -19,8 +20,10 @@ import org.pircbotx.exception.IrcException;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.JoinEvent;
 import org.pircbotx.hooks.events.MessageEvent;
+import org.pircbotx.hooks.events.NickChangeEvent;
 import org.pircbotx.hooks.events.PartEvent;
 import org.pircbotx.hooks.events.PrivateMessageEvent;
+import org.pircbotx.hooks.events.QuitEvent;
 
 import de.static_interface.shadow.adventurirc.AdventurIRC;
 import de.static_interface.shadow.adventurirc.gui.panel.ChatPanel;
@@ -89,6 +92,21 @@ public class NetworkManager
 		AdventurIRC.frame.getPublicChatPanel(hostname, channel.getName());
 	}
 
+	public static void sendPrivateMessage(ChatPanel currentPanel, String hostname, String username, String message)
+	{
+		User u = servers.get(hostname).getUserChannelDao().getUser(username);
+		if ( u == null )
+		{
+			currentPanel.write(ChatPanel.PREFIX, username+" ist nicht online !");
+			return;
+		}
+		u.send().message(message);
+		if ( AdventurIRC.frame.getPrivateChatPanel(hostname, username) == null )
+		{
+			AdventurIRC.frame.addPrivateChatPanel(hostname, username, new PrivateChatPanel(hostname, u));
+		}
+	}
+
 	public static void quitServer(String hostname)
 	{
 		quitServer(hostname, AdventurIRC.VERSION);
@@ -96,11 +114,26 @@ public class NetworkManager
 
 	public static void rename(String hostname, String newNickname)
 	{
+		if ( hostname.equals("*") )
+		{
+			for ( PircBotX bot : servers.values() )
+			{
+				bot.sendIRC().changeNick(newNickname);
+			}
+			return;
+		}
 		servers.get(hostname).sendIRC().changeNick(newNickname);
 	}
 
 	public static void quitServer(String hostname, String reason)
 	{
+		if ( hostname.equals("*") )
+		{
+			for ( PircBotX bot : servers.values() )
+			{
+				bot.sendIRC().quitServer(reason);
+			}
+		}
 		for ( Channel c : servers.get(hostname).getUserBot().getChannels() )
 		{
 			partChannel(hostname, c);
@@ -161,15 +194,31 @@ class Listener extends ListenerAdapter<PircBotX>
 	@Override
 	public void onJoin(JoinEvent<PircBotX> event) throws Exception
 	{
-		AdventurIRC.frame.getPublicChatPanel(event.getBot().getConfiguration().getServerHostname(), event.getChannel().getName()).refreshUserList(false);
+		AdventurIRC.frame.getPublicChatPanel(event.getBot().getConfiguration().getServerHostname(), event.getChannel().getName()).refreshUserList(true);
 		AdventurIRC.frame.getPublicChatPanel(event.getBot().getConfiguration().getServerHostname(), event.getChannel().getName()).write(ChatPanel.PREFIX, event.getUser().getNick()+" ist dem Channel beigetreten !");
+	}
+
+	@Override
+	public void onNickChange(NickChangeEvent<PircBotX> event) throws Exception
+	{
+		PrivateChatPanel oldPanel = AdventurIRC.frame.getPrivateChatPanel(hostname, event.getOldNick());
+		AdventurIRC.frame.remove(oldPanel);
+		AdventurIRC.frame.addPrivateChatPanel(hostname, event.getNewNick(), oldPanel);
+		new Thread(new UserListRefresher(AdventurIRC.frame.getPublicChatPanels(hostname))).start();
+	}
+
+	@Override
+	public void onQuit(QuitEvent<PircBotX> event) throws Exception
+	{
+		AdventurIRC.frame.getPrivateChatPanel(hostname, event.getUser().getNick()).write(ChatPanel.PREFIX, event.getUser().getNick()+" hat den Server verlassen. ("+event.getReason()+")");
 	}
 
 	@Override
 	public void onPart(PartEvent<PircBotX> event) throws Exception
 	{
-		AdventurIRC.frame.getPublicChatPanel(event.getBot().getConfiguration().getServerHostname(), event.getChannel().getName()).refreshUserList(true);
-		AdventurIRC.frame.getPublicChatPanel(event.getBot().getConfiguration().getServerHostname(), event.getChannel().getName()).write(ChatPanel.PREFIX, event.getUser().getNick()+" hat den Channel verlassen !");
+		AdventurIRC.frame.getPublicChatPanel(event.getBot().getConfiguration().getServerHostname(), event.getChannel().getName()).refreshUserList(false);
+		if ( !NetworkManager.servers.get(hostname).getUserChannelDao().userExists(event.getUser().getNick()) ) AdventurIRC.frame.getPublicChatPanel(hostname, event.getChannel().getName()).write(ChatPanel.PREFIX, event.getUser().getNick()+" hat den Server verlassen. ("+event.getReason()+")");
+		else AdventurIRC.frame.getPublicChatPanel(event.getBot().getConfiguration().getServerHostname(), event.getChannel().getName()).write(ChatPanel.PREFIX, event.getUser().getNick()+" hat den Channel verlassen !");
 	}
 
 	@Override
@@ -227,5 +276,20 @@ class NotificationPlayer extends Thread
 	{
 		clip.start();
 		clip.stop();
+	}
+}
+class UserListRefresher extends Thread
+{
+	private Vector<PublicChatPanel> vector;
+
+	public UserListRefresher(Vector<PublicChatPanel> vector)
+	{
+		this.vector = vector;
+	}
+
+	@Override
+	public void run()
+	{
+		for ( PublicChatPanel p : vector ) p.refreshUserList(false);
 	}
 }
