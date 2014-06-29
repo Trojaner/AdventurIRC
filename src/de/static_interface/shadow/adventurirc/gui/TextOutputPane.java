@@ -69,7 +69,7 @@ class TextOutput extends JTextPane
 
 	public void write(String text)
 	{
-		String[] splitByColorCode = removeFormatting(text).trim().split(String.valueOf((char) 3));
+		String[] splitByColorCode = removeFormatting(text).trim().split(colorCodeStart);
 		Style style;
 
 		for ( String s : splitByColorCode )
@@ -87,10 +87,18 @@ class TextOutput extends JTextPane
 				continue;
 			}
 
-			if ( Character.isDigit(s.charAt(0)) && Character.isDigit(s.charAt(1)) )
+			if ( Character.isDigit(s.charAt(0)) )
 			{
-				style = ColorUtils.getStyle(colorCodeStart+s.substring(0, 2), getStyledDocument());
-				s = s.substring(2);
+				if ( Character.isDigit(s.charAt(1)) )
+				{
+					style = ColorUtils.getStyle(colorCodeStart+s.substring(0,2), getStyledDocument());
+					s = s.substring(2);
+				}
+				else 
+				{
+					style = ColorUtils.getStyle(colorCodeStart+"0"+s.substring(0, 1), getStyledDocument());
+					s = s.substring(1);
+				}
 			}
 			else
 			{
