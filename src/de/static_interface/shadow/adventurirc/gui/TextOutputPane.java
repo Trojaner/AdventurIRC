@@ -2,12 +2,14 @@ package de.static_interface.shadow.adventurirc.gui;
 
 import java.awt.Color;
 
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
 import static org.pircbotx.Colors.BLUE;
-import static org.pircbotx.Colors.TEAL;
 import static org.pircbotx.Colors.BROWN;
 import static org.pircbotx.Colors.CYAN;
 import static org.pircbotx.Colors.DARK_BLUE;
@@ -19,10 +21,110 @@ import static org.pircbotx.Colors.MAGENTA;
 import static org.pircbotx.Colors.OLIVE;
 import static org.pircbotx.Colors.PURPLE;
 import static org.pircbotx.Colors.RED;
+import static org.pircbotx.Colors.TEAL;
 import static org.pircbotx.Colors.WHITE;
 import static org.pircbotx.Colors.YELLOW;
+import static org.pircbotx.Colors.removeFormatting;
+import static org.pircbotx.Colors.BLACK;
 
-public class ColorUtils
+public class TextOutputPane extends JScrollPane
+{
+	private static final long serialVersionUID = 1L;
+
+	protected TextOutput textOutput = new TextOutput();
+
+	public TextOutputPane()
+	{
+		super();
+		setViewportView(textOutput);
+	}
+
+	public void write(String text)
+	{
+		textOutput.write(text);
+		textOutput.setCaretPosition(textOutput.getText().length());
+	}
+
+	public String getText()
+	{
+		return textOutput.getText();
+	}
+
+	public void clear()
+	{
+		textOutput.setText("");
+	}
+}
+class TextOutput extends JTextPane
+{
+	private static final long serialVersionUID = 1L;
+
+	private static final String colorCodeStart = String.valueOf((char) 3);
+
+	public TextOutput()
+	{
+		super();
+		setEditable(false);
+		ColorUtils.registerStyles(getStyledDocument());
+	}
+
+	public void write(String text)
+	{
+		String[] splitByColorCode = removeFormatting(text).trim().split(colorCodeStart);
+		Style style;
+
+		for ( String s : splitByColorCode )
+		{
+			if ( s.startsWith("[") )
+			{
+				try
+				{
+					getStyledDocument().insertString(getStyledDocument().getLength(), s, ColorUtils.getStyle(BLACK, getStyledDocument()));
+				}
+				catch (BadLocationException e)
+				{
+					e.printStackTrace();
+				}
+				continue;
+			}
+
+			if ( Character.isDigit(s.charAt(0)) )
+			{
+				if ( Character.isDigit(s.charAt(1)) )
+				{
+					style = ColorUtils.getStyle(colorCodeStart+s.substring(0,2), getStyledDocument());
+					s = s.substring(2);
+				}
+				else 
+				{
+					style = ColorUtils.getStyle(colorCodeStart+"0"+s.substring(0, 1), getStyledDocument());
+					s = s.substring(1);
+				}
+			}
+			else
+			{
+				style = ColorUtils.getStyle(BLACK, getStyledDocument());
+			}
+
+			try
+			{
+				getStyledDocument().insertString(getStyledDocument().getLength(), s, style);
+			}
+			catch (BadLocationException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		try
+		{
+			getStyledDocument().insertString(getStyledDocument().getLength(), "\n", ColorUtils.getStyle(BLACK, getStyledDocument()));
+		}
+		catch (BadLocationException e)
+		{
+		}
+	}
+}
+class ColorUtils
 {
 	public static StyledDocument registerStyles(StyledDocument document)
 	{
@@ -41,20 +143,20 @@ public class ColorUtils
 		registerStyle(document, RED);
 		registerStyle(document, WHITE);
 		registerStyle(document, YELLOW);
-		
+
 		return document;
 	}
-	
+
 	public static Style getStyle(String color, StyledDocument document)
 	{
 		return document.getStyle(color);
 	}
-	
+
 	private static void registerStyle(StyledDocument document, String color)
 	{
 		StyleConstants.setForeground(document.addStyle(color, null), getColor(color));
 	}
-	
+
 	public static Color getColor(String color)
 	{
 		if ( color.equals(BLUE) ) return Color.BLUE;
