@@ -2,8 +2,8 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.static_interface.shadow</groupId>
   <artifactId>AdventurIRC</artifactId>
-  <version>1.0.1</version>
-  <name>Iguanidae</name>
+  <version>1.0.3.0</version>
+  <name>Ailurus fulgens</name>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <plugins>
