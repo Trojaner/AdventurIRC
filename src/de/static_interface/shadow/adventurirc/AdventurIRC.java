@@ -15,6 +15,6 @@ public class AdventurIRC implements Runnable
 	public void run()
 	{
 		NetworkManager.connectToServer("irc.adventuria.eu", 6667, FileManager.getString(FileManager.CFG_NICKNAME));
-		NetworkManager.joinChannel("irc.adventuria.eu", "#advTest");
+		NetworkManager.joinChannel("irc.adventuria.eu", "#adventuriabot");
 	}
 }
