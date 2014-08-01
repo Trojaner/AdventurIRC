@@ -94,7 +94,11 @@ public class Bootstrap extends JFrame
 	{
 		if ( !Files.exists(AdventurIRCConfiguration.path) )
 		{
-			String newNickname = JOptionPane.showInputDialog("Füge hier deinen Nicknamen ein damit du chatten kannst !");
+			String newNickname = JOptionPane.showInputDialog("Füge hier deinen Nicknamen ein, damit du chatten kannst!").trim();
+			while ( newNickname.trim().isEmpty() )
+			{
+				newNickname = JOptionPane.showInputDialog("Füge hier deinen Nicknamen ein, damit du chatten kannst!").trim();
+			}
 			FileManager.setString(FileManager.CFG_NICKNAME, newNickname);
 		}
 
