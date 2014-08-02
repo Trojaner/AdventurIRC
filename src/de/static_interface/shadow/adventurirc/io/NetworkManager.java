@@ -4,13 +4,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.Vector;
-
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
 
 import org.pircbotx.Channel;
 import org.pircbotx.Configuration;
@@ -26,6 +19,7 @@ import org.pircbotx.hooks.events.PrivateMessageEvent;
 import org.pircbotx.hooks.events.QuitEvent;
 
 import de.static_interface.shadow.adventurirc.AdventurIRC;
+import de.static_interface.shadow.adventurirc.Beeper;
 import de.static_interface.shadow.adventurirc.gui.panel.ChatPanel;
 import de.static_interface.shadow.adventurirc.gui.panel.PrivateChatPanel;
 import de.static_interface.shadow.adventurirc.gui.panel.PublicChatPanel;
@@ -205,7 +199,10 @@ class Listener extends ListenerAdapter<PircBotX>
 		PrivateChatPanel oldPanel = AdventurIRC.frame.getPrivateChatPanel(hostname, event.getOldNick());
 		AdventurIRC.frame.remove(oldPanel);
 		AdventurIRC.frame.addPrivateChatPanel(hostname, event.getNewNick(), oldPanel);
-		new Thread(new UserListRefresher(AdventurIRC.frame.getPublicChatPanels(hostname))).start();
+		for ( PublicChatPanel panel : AdventurIRC.frame.getPublicChatPanels(event.getBot().getConfiguration().getServerHostname()) )
+		{
+			panel.refreshUserList(true);
+		}
 	}
 
 	@Override
@@ -217,7 +214,7 @@ class Listener extends ListenerAdapter<PircBotX>
 	@Override
 	public void onPart(PartEvent<PircBotX> event) throws Exception
 	{
-		AdventurIRC.frame.getPublicChatPanel(event.getBot().getConfiguration().getServerHostname(), event.getChannel().getName()).refreshUserList(false);
+		AdventurIRC.frame.getPublicChatPanel(event.getBot().getConfiguration().getServerHostname(), event.getChannel().getName()).refreshUserList(true);
 		if ( !NetworkManager.servers.get(hostname).getUserChannelDao().userExists(event.getUser().getNick()) ) AdventurIRC.frame.getPublicChatPanel(hostname, event.getChannel().getName()).write(ChatPanel.PREFIX, event.getUser().getNick()+" hat den Server verlassen. ("+event.getReason()+")");
 		else AdventurIRC.frame.getPublicChatPanel(event.getBot().getConfiguration().getServerHostname(), event.getChannel().getName()).write(ChatPanel.PREFIX, event.getUser().getNick()+" hat den Channel verlassen !");
 	}
@@ -226,10 +223,7 @@ class Listener extends ListenerAdapter<PircBotX>
 	public void onMessage(MessageEvent<PircBotX> event) throws Exception
 	{
 		AdventurIRC.frame.getPublicChatPanel(hostname, event.getChannel().getName()).write(event.getUser().getNick(), event.getMessage());
-		if ( event.getMessage().contains(AdventurIRC.nickname) )
-		{
-			NotificationPlayer.play();
-		}
+		if ( event.getMessage().contains(AdventurIRC.nickname) ) Beeper.beep();
 	}
 
 	@Override
@@ -237,60 +231,6 @@ class Listener extends ListenerAdapter<PircBotX>
 	{
 		if ( AdventurIRC.frame.getPrivateChatPanel(hostname, event.getUser().getNick()) == null ) AdventurIRC.frame.addPrivateChatPanel(hostname, event.getUser().getNick(), new PrivateChatPanel(hostname, event.getUser()));
 		AdventurIRC.frame.getPrivateChatPanel(hostname, event.getUser().getNick()).write(event.getUser().getNick(), event.getMessage());
-		NotificationPlayer.play();
-	}
-}
-class NotificationPlayer extends Thread
-{
-	public static final void play()
-	{
-		Thread thread = new Thread(new NotificationPlayer());
-		thread.start();
-	}
-
-	Clip clip;
-
-	public NotificationPlayer()
-	{
-		try
-		{
-			clip = AudioSystem.getClip();
-			AudioInputStream in = AudioSystem.getAudioInputStream(AdventurIRC.class.getResourceAsStream("/de/static_interface/shadow/adventurirc/Randomize.wav"));
-			clip.open(in);
-		}
-		catch (UnsupportedAudioFileException e)
-		{
-			e.printStackTrace(FileManager.logWriter);
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace(FileManager.logWriter);
-		}
-		catch (LineUnavailableException e)
-		{
-			e.printStackTrace(FileManager.logWriter);
-		}
-	}
-
-	@Override
-	public void run()
-	{
-		clip.start();
-		clip.stop();
-	}
-}
-class UserListRefresher extends Thread
-{
-	private Vector<PublicChatPanel> vector;
-
-	public UserListRefresher(Vector<PublicChatPanel> vector)
-	{
-		this.vector = vector;
-	}
-
-	@Override
-	public void run()
-	{
-		for ( PublicChatPanel p : vector ) p.refreshUserList(false);
+		Beeper.beep();
 	}
 }
