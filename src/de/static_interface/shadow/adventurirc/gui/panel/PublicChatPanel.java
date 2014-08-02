@@ -10,6 +10,7 @@ import de.static_interface.shadow.adventurirc.io.NetworkManager;
 import static org.pircbotx.Colors.BLACK;
 import static org.pircbotx.Colors.BROWN;
 import static org.pircbotx.Colors.DARK_GRAY;
+import static org.pircbotx.Colors.DARK_GREEN;
 import static org.pircbotx.Colors.RED;
 
 public class PublicChatPanel extends NetworkedChatPanel
@@ -82,15 +83,24 @@ public class PublicChatPanel extends NetworkedChatPanel
 		{
 			if ( u.getChannelsVoiceIn().contains(channel) )
 			{
-				userList.write(BROWN+"V " + (u.isVerified() ? BLACK : DARK_GRAY)+u.getNick());
+				userList.write(BROWN+"V " + BLACK + u.getNick());
 				continue;
 			}
-			else if ( u.getChannelsOpIn().contains(channel) || u.getChannelsOwnerIn().contains(channel) )
+			else if ( u.getChannelsOpIn().contains(channel) || u.getChannelsSuperOpIn().contains(channel) )
 			{
-				userList.write(RED+"@ " + (u.isVerified() ? BLACK : DARK_GRAY)+u.getNick());
+				userList.write(RED+"@ " + BLACK +u.getNick());
 				continue;
 			}
-		else userList.write(u.isVerified() ? BLACK : DARK_GRAY+u.getNick());
+			else if ( u.getChannelsOwnerIn().contains(channel) )
+			{
+				userList.write(RED+"@ "+ DARK_GREEN + u.getNick());
+				continue;
+			}
+			else if ( u.getChannelsHalfOpIn().contains(channel) )
+			{
+				userList.write(RED+"% " + BLACK + u.getNick());
+			}
+			else userList.write(u.isVerified() ? BLACK : DARK_GRAY+u.getNick());
 		}
 	}
 
