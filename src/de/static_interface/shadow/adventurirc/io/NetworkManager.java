@@ -48,6 +48,7 @@ public class NetworkManager
 									.setVersion(AdventurIRC.VERSION)
 									.setEncoding(StandardCharsets.UTF_8)
 									.addListener(listener)
+									.setRealName(username)
 									.setLogin(username)
 									.setLocale(Locale.GERMAN)
 									.buildConfiguration();

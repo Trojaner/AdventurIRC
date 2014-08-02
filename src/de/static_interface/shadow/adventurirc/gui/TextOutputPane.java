@@ -9,6 +9,8 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
+import de.static_interface.shadow.adventurirc.AdventurIRC;
+import de.static_interface.shadow.adventurirc.Beeper;
 import static org.pircbotx.Colors.BLUE;
 import static org.pircbotx.Colors.BROWN;
 import static org.pircbotx.Colors.CYAN;
@@ -42,6 +44,7 @@ public class TextOutputPane extends JScrollPane
 	public void write(String text)
 	{
 		textOutput.write(text);
+		if ( text.contains(AdventurIRC.nickname) ) Beeper.beep();
 		textOutput.setCaretPosition(textOutput.getStyledDocument().getLength());
 	}
 
@@ -59,7 +62,7 @@ class TextOutput extends JTextPane
 {
 	private static final long serialVersionUID = 1L;
 
-	private static final String colorCodeStart = String.valueOf((char) 3);
+	protected static final String colorCodeStart = String.valueOf((char) 3);
 
 	public TextOutput()
 	{
@@ -155,6 +158,10 @@ class ColorUtils
 	private static void registerStyle(StyledDocument document, String color)
 	{
 		StyleConstants.setForeground(document.addStyle(color, null), getColor(color));
+		if ( YELLOW.contains(color) || WHITE.contains(color) )
+		{
+			StyleConstants.setBackground(document.getStyle(color), Color.BLACK);
+		}
 	}
 
 	public static Color getColor(String color)
@@ -168,7 +175,7 @@ class ColorUtils
 		if ( color.equals(GREEN) ) return Color.GREEN;
 		if ( color.equals(LIGHT_GRAY) ) return Color.LIGHT_GRAY;
 		if ( color.equals(MAGENTA) ) return Color.MAGENTA;
-		if ( color.equals(OLIVE) ) return Color.GREEN.darker().darker();
+		if ( color.equals(OLIVE) ) return Color.YELLOW.darker().darker();
 		if ( color.equals(PURPLE) ) return Color.MAGENTA.darker();
 		if ( color.equals(RED) ) return Color.RED;
 		if ( color.equals(TEAL) ) return Color.CYAN.darker();

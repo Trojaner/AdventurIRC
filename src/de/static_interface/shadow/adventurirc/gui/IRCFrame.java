@@ -7,12 +7,14 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+
+import javax.swing.JFrame;
+import javax.swing.JTabbedPane;
+
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Vector;
 
-import javax.swing.JFrame;
-import javax.swing.JTabbedPane;
 
 import de.static_interface.shadow.adventurirc.gui.panel.ChatPanel;
 import de.static_interface.shadow.adventurirc.gui.panel.HomePanel;
@@ -20,6 +22,7 @@ import de.static_interface.shadow.adventurirc.gui.panel.PrivateChatPanel;
 import de.static_interface.shadow.adventurirc.gui.panel.PublicChatPanel;
 import de.static_interface.shadow.adventurirc.gui.panel.ServerPanel;
 import de.static_interface.shadow.adventurirc.io.NetworkManager;
+import de.static_interface.shadow.adventurirc.io.OptionPanel;
 
 public class IRCFrame extends JFrame
 {
@@ -35,6 +38,7 @@ public class IRCFrame extends JFrame
 	private static final HashMap<String, ServerPanel> serverpanels = new HashMap<String, ServerPanel>();
 
 	public final HomePanel HomePanel = new HomePanel();
+	private final OptionPanel optionPanel = new OptionPanel();
 
 	private static JTabbedPane tabbedContents = new JTabbedPane();
 
@@ -43,6 +47,7 @@ public class IRCFrame extends JFrame
 		setSize(400, 250);
 		addContent(ChatPanel.PREFIX, HomePanel);
 		add(tabbedContents);
+		tabbedContents.add(optionPanel, "Optionen");
 		addWindowListener(
 		new WindowAdapter()
 		{
@@ -98,7 +103,7 @@ public class IRCFrame extends JFrame
 				for ( Component c : tabbedContents.getComponents() )
 				{
 					c.setSize(getSize());
-					((ChatPanel) c).resizeComponents();
+					if ( c instanceof ChatPanel ) ((ChatPanel) c).resizeComponents();
 				}
 			}
 		});
