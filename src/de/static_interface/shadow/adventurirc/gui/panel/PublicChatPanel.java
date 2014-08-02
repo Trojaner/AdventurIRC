@@ -79,6 +79,8 @@ public class PublicChatPanel extends NetworkedChatPanel
 			e.printStackTrace();
 		}
 
+		userList.clear();
+
 		for ( User u : channel.getUsers() )
 		{
 			if ( u.getChannelsVoiceIn().contains(channel) )
