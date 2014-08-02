@@ -1,8 +1,5 @@
 package de.static_interface.shadow.adventurirc.gui.panel;
 
-import java.util.HashMap;
-import java.util.Map.Entry;
-
 import org.pircbotx.Channel;
 import org.pircbotx.User;
 
@@ -14,7 +11,6 @@ import static org.pircbotx.Colors.BLACK;
 import static org.pircbotx.Colors.BROWN;
 import static org.pircbotx.Colors.DARK_GRAY;
 import static org.pircbotx.Colors.RED;
-import static org.pircbotx.Colors.DARK_GREEN;
 
 public class PublicChatPanel extends NetworkedChatPanel
 {
@@ -23,8 +19,6 @@ public class PublicChatPanel extends NetworkedChatPanel
 	private Channel channel;
 
 	private TextOutputPane userList = new TextOutputPane();
-
-	private HashMap<String, User> usersWithLevel = new HashMap<String, User>();
 
 	public PublicChatPanel(String servername, Channel channel)
 	{
@@ -73,7 +67,7 @@ public class PublicChatPanel extends NetworkedChatPanel
 		channel.send().message(text);
 	}
 
-	public void refreshUserList(boolean onlyJoin, User... joinedUsers)
+	public void refreshUserList(boolean onlyJoin)
 	{
 		try
 		{
@@ -84,39 +78,19 @@ public class PublicChatPanel extends NetworkedChatPanel
 			e.printStackTrace();
 		}
 
-		for ( User u : channel.getOwners() )
+		for ( User u : channel.getUsers() )
 		{
-			usersWithLevel.put(RED+"@ "+(u.isVerified() ? DARK_GREEN : BLACK), u);
-		}
-
-		for ( User u : channel.getOps() )
-		{
-			usersWithLevel.put(RED+"@ "+(u.isVerified() ? BLACK : DARK_GRAY), u);
-		}
-
-		for ( User u : channel.getVoices() )
-		{
-			usersWithLevel.put(BROWN+"V "+(u.isVerified() ? BLACK : DARK_GRAY), u);
-		}
-
-		for ( User u : channel.getHalfOps() )
-		{
-			usersWithLevel.put(RED+"* "+(u.isVerified() ? DARK_GREEN : BLACK), u);
-		}
-
-		for ( User u : channel.getSuperOps() )
-		{
-			usersWithLevel.put(RED+"% "+(u.isVerified() ? BLACK : DARK_GRAY), u);
-		}
-
-		for ( User u : channel.getNormalUsers() )
-		{
-			usersWithLevel.put(BLACK+" ", u);
-		}
-
-		for ( Entry<String, User> e : usersWithLevel.entrySet() )
-		{
-			userList.write(e.getKey()+e.getValue().getNick());
+			if ( u.getChannelsVoiceIn().contains(channel) )
+			{
+				userList.write(BROWN+"V " + (u.isVerified() ? BLACK : DARK_GRAY)+u.getNick());
+				continue;
+			}
+			else if ( u.getChannelsOpIn().contains(channel) || u.getChannelsOwnerIn().contains(channel) )
+			{
+				userList.write(RED+"@ " + (u.isVerified() ? BLACK : DARK_GRAY)+u.getNick());
+				continue;
+			}
+		else userList.write(u.isVerified() ? BLACK : DARK_GRAY+u.getNick());
 		}
 	}
 
